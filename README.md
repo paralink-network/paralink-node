@@ -1,10 +1,10 @@
-# Paralink Network node
+![](https://paralink.network/images/logo-sm-home.png)
 
-Paralink Node is responsible for accessing real world data and relaying it back
-to smart contracts via JSON RPC.
+Paralink Node is responsible for executing ETL pipelines and PQL queries. The results are relayed to
+all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
 
-Paralink Node can be ran as a self-hosted solution, which offers cheap but centralized data ingress solution. Ideally it is ran by self-organizing quorums providing a robust ingress service.
-
+## Configure
+Before running the node, please inspect `.env`.
 
 ## Run
 
