@@ -1,4 +1,4 @@
-from paranode.pql.handlers.rest_api_handler import RestApiHandler
+from src.pql.handlers.rest_api_handler import RestApiHandler
 
 
 class Config:

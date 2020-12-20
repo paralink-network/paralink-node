@@ -3,8 +3,8 @@ import typing
 
 from sanic_jsonrpc.errors import Error
 
-from .handlers.rest_api_handler import RestApiHandler
-from paranode.config import Config
+from src.pql.handlers.rest_api_handler import RestApiHandler
+from src.config import Config
 
 
 class Pipeline:
