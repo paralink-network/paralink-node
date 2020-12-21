@@ -4,7 +4,7 @@ from sanic import Sanic
 from sanic.log import logger
 from sanic_jsonrpc import SanicJsonrpc
 
-from paranode.pql import parse_and_execute
+from src.pql.parser import parse_and_execute
 
 
 def create_app(args) -> Sanic:

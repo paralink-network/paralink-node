@@ -1,7 +1,7 @@
 import argparse
 import textwrap
 
-from . import create_app
+from src import create_app
 
 
 def parse_arguments():

@@ -1,4 +1,15 @@
-from paranode.pql.handlers.rest_api_handler import RestApiHandler
+from os import getenv
+from dotenv import load_dotenv
+
+from src.pql.handlers.rest_api_handler import RestApiHandler
+
+# Load the main configuration file
+load_dotenv('.env')
+
+# Ethereum
+ETHERSCAN_KEY = getenv("ETHERSCAN_KEY")
+INFURA_KEY = getenv("INFURA_KEY")
+GETH_HTTP_RPC = getenv("GETH_HTTP_RPC", 'http://localhost:8745')
 
 
 class Config:

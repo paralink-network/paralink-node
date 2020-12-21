@@ -3,7 +3,7 @@ import typing
 import aiohttp
 from sanic_jsonrpc.errors import Error
 
-from .handler import Handler
+from src.pql.handlers.handler import Handler
 
 
 class RestApiHandler(Handler):

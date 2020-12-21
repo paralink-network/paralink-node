@@ -14,6 +14,9 @@ sphinxcontrib-napoleon = "*"
 sanic-jsonrpc = "*"
 aiohttp = "*"
 pytest-sanic = "*"
+python-dotenv = "*"
+ipython = "*"
+funcy = "*"
 
 [requires]
 python_version = "3.8"
