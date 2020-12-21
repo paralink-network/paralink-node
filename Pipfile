@@ -19,6 +19,8 @@ ipython = "*"
 funcy = "*"
 ipytest = "*"
 pprintpp = "*"
+numpy = "*"
+aioresponses = "*"
 
 [requires]
 python_version = "3.8"
