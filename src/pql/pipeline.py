@@ -33,6 +33,8 @@ class Pipeline:
                 result = await self.extract(step)
             if step["step"] == "traverse":
                 result = await self.traverse(step, i)
+            if step["step"] == "get_index":
+                result = await self.get_index(step, i)
             if step["step"] == "math":
                 result = await self.math(step, i)
 
@@ -64,8 +66,8 @@ class Pipeline:
         if step["method"] == "json":
             curr = self.get_value_for_step(index - 1)
 
-            # Traverse through the levels
-            for level in step["levels"]:
+            # Traverse through the JSON
+            for level in step["params"]:
                 curr = curr[level]
 
             return curr
@@ -73,6 +75,17 @@ class Pipeline:
             raise MethodNotFound(
                 f"handler for traverse step method \"{step['method']}\" not found."
             )
+
+    async def get_index(self, step: dict, step_index: int) -> typing.Any:
+        """Get the item on step['params'] from the result from the previous step.
+
+        Args:
+            step: current step PQL json.
+            index: current step index.
+        """
+        prev_result = self.get_value_for_step(step_index - 1)
+
+        return prev_result[int(step["params"])]
 
     async def math(self, step: dict, index: int) -> Decimal:
         """Perform math operation on the previous step given the `method` and `params`.
