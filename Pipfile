@@ -17,6 +17,8 @@ pytest-sanic = "*"
 python-dotenv = "*"
 ipython = "*"
 funcy = "*"
+ipytest = "*"
+pprintpp = "*"
 
 [requires]
 python_version = "3.8"
