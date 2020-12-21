@@ -1,3 +1,4 @@
+import json
 import typing
 
 import aiohttp
@@ -24,11 +25,14 @@ class RestApiHandler(Handler):
         if method == "get":
             async with aiohttp.ClientSession() as session:
                 async with session.get(step["uri"]) as resp:
-                    return await resp.json()
+                    data = await resp.read()
+
+                    return json.loads(data)
         elif method == "post":
             async with aiohttp.ClientSession() as session:
-                async with session.get(step["uri"]) as resp:
-                    return await resp.json()
+                async with session.post(step["uri"], json=step["params"]) as resp:
+                    data = await resp.read()
+                    return json.loads(data)
         else:
             raise MethodNotFound(f'handler for HTTP method "{method}" not found.')
 

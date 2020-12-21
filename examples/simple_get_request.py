@@ -5,32 +5,34 @@ from aiohttp import ClientSession
 
 
 async def main():
+    """Obtains Bitcoin price from a single API endpoint.
+    """
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
-        "name": "Simple HTTP GET request",
+        "name": "simple http get request",
         "psql_version": "0.1",
         "sources": [
             {
-                "name": "Bitcoin price ETL",
+                "name": "bitcoin price etl",
                 "pipeline": [
-                    # First perform HTTP GET request to CoinGecko API
+                    # first perform http get request to coingecko api
                     {
                         "step": "extract",
                         "method": "http.get",
                         "uri": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
                     },
-                    # The resulting JSON will look like
+                    # the resulting json will look like
                     # {
                     # "bitcoin": {
                     # "usd": 20551
                     # }
                     # }
-                    # Therefore we have to traverse the JSON
+                    # therefore we have to traverse the json
                     {
                         "step": "traverse",
                         "method": "json",
-                        "levels": ["bitcoin", "usd"],
+                        "params": ["bitcoin", "usd"],
                     },
                 ],
             }
@@ -48,7 +50,6 @@ async def main():
     async with ClientSession() as session:
         async with session.post(url + "/rpc", json=request) as resp:
             response = await resp.json()
-            # print(response["result"])  # 19
             print(response)
 
 
