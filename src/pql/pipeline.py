@@ -1,8 +1,7 @@
 from decimal import Decimal
 import typing
 
-from sanic_jsonrpc.errors import Error
-
+from src.pql.exceptions import MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.config import Config
 
@@ -51,8 +50,7 @@ class Pipeline:
         if step["method"].startswith("http"):
             return await RestApiHandler.execute(step)
         else:
-            raise Error(
-                -32010,
+            raise MethodNotFound(
                 f"handler for extract step method \"{step['method']}\" not found.",
             )
 
@@ -72,9 +70,8 @@ class Pipeline:
 
             return curr
         else:
-            raise Error(
-                -32010,
-                f"handler for traverse step method \"{step['method']}\" not found.",
+            raise MethodNotFound(
+                f"handler for traverse step method \"{step['method']}\" not found."
             )
 
     async def math(self, step: dict, index: int) -> Decimal:
@@ -106,8 +103,8 @@ class Pipeline:
             else:
                 return curr / params
         else:
-            raise Error(
-                -32010, f"handler for math step method \"{step['method']}\" not found."
+            raise MethodNotFound(
+                f"handler for math step method \"{step['method']}\" not found."
             )
 
     def get_value_for_step(self, i: int) -> typing.Any:
@@ -117,16 +114,14 @@ class Pipeline:
             i: step index to get the value for.
 
         Raises:
-            Error(-32009): step value on index `i` has no value.
+            NoInputValue: step value on index `i` has no value.
 
         Returns:
             typing.Any: step value on index `i`
 
         """
         if i < 0:
-            raise Error(
-                -32009, f"Step with index {i} has no input value.",
-            )
+            raise NoInputValue(f"Step with index {i} has no input value.",)
         else:
             return self.step_results[i]
 
