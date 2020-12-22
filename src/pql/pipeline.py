@@ -3,6 +3,7 @@ import typing
 
 from src.pql.exceptions import MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
+from src.pql.handlers.sql_handler import SqlHandler
 from src.config import Config
 
 
@@ -51,6 +52,8 @@ class Pipeline:
         """
         if step["method"].startswith("http"):
             return await RestApiHandler.execute(step)
+        if step["method"].startswith("sql"):
+            return await SqlHandler.execute(step)
         else:
             raise MethodNotFound(
                 f"handler for extract step method \"{step['method']}\" not found.",
