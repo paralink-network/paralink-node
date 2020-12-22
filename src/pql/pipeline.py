@@ -1,8 +1,7 @@
 from decimal import Decimal
 import typing
 
-from sanic_jsonrpc.errors import Error
-
+from src.pql.exceptions import MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.config import Config
 
@@ -34,6 +33,8 @@ class Pipeline:
                 result = await self.extract(step)
             if step["step"] == "traverse":
                 result = await self.traverse(step, i)
+            if step["step"] == "get_index":
+                result = await self.get_index(step, i)
             if step["step"] == "math":
                 result = await self.math(step, i)
 
@@ -51,8 +52,7 @@ class Pipeline:
         if step["method"].startswith("http"):
             return await RestApiHandler.execute(step)
         else:
-            raise Error(
-                -32010,
+            raise MethodNotFound(
                 f"handler for extract step method \"{step['method']}\" not found.",
             )
 
@@ -66,16 +66,26 @@ class Pipeline:
         if step["method"] == "json":
             curr = self.get_value_for_step(index - 1)
 
-            # Traverse through the levels
-            for level in step["levels"]:
+            # Traverse through the JSON
+            for level in step["params"]:
                 curr = curr[level]
 
             return curr
         else:
-            raise Error(
-                -32010,
-                f"handler for traverse step method \"{step['method']}\" not found.",
+            raise MethodNotFound(
+                f"handler for traverse step method \"{step['method']}\" not found."
             )
+
+    async def get_index(self, step: dict, step_index: int) -> typing.Any:
+        """Get the item on step['params'] from the result from the previous step.
+
+        Args:
+            step: current step PQL json.
+            index: current step index.
+        """
+        prev_result = self.get_value_for_step(step_index - 1)
+
+        return prev_result[int(step["params"])]
 
     async def math(self, step: dict, index: int) -> Decimal:
         """Perform math operation on the previous step given the `method` and `params`.
@@ -106,8 +116,8 @@ class Pipeline:
             else:
                 return curr / params
         else:
-            raise Error(
-                -32010, f"handler for math step method \"{step['method']}\" not found."
+            raise MethodNotFound(
+                f"handler for math step method \"{step['method']}\" not found."
             )
 
     def get_value_for_step(self, i: int) -> typing.Any:
@@ -117,16 +127,14 @@ class Pipeline:
             i: step index to get the value for.
 
         Raises:
-            Error(-32009): step value on index `i` has no value.
+            NoInputValue: step value on index `i` has no value.
 
         Returns:
             typing.Any: step value on index `i`
 
         """
         if i < 0:
-            raise Error(
-                -32009, f"Step with index {i} has no input value.",
-            )
+            raise NoInputValue(f"Step with index {i} has no input value.",)
         else:
             return self.step_results[i]
 

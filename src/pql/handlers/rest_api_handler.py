@@ -1,9 +1,10 @@
+import json
 import typing
 
 import aiohttp
-from sanic_jsonrpc.errors import Error
 
 from src.pql.handlers.handler import Handler
+from src.pql.exceptions import MethodNotFound
 
 
 class RestApiHandler(Handler):
@@ -24,7 +25,14 @@ class RestApiHandler(Handler):
         if method == "get":
             async with aiohttp.ClientSession() as session:
                 async with session.get(step["uri"]) as resp:
-                    return await resp.json()
+                    data = await resp.read()
+
+                    return json.loads(data)
+        elif method == "post":
+            async with aiohttp.ClientSession() as session:
+                async with session.post(step["uri"], json=step["params"]) as resp:
+                    data = await resp.read()
+                    return json.loads(data)
         else:
-            raise Error(-32010, f'handler for HTTP method "{method}" not found.')
+            raise MethodNotFound(f'handler for HTTP method "{method}" not found.')
 
