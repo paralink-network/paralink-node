@@ -11,11 +11,11 @@ async def test_http_get(client):
         )
 
         get_pql = {
-            "name": "simple http get request",
+            "name": "GET HTTP",
             "psql_version": "0.1",
             "sources": [
                 {
-                    "name": "bitcoin price etl",
+                    "name": "Bitfinex BTC price GET request",
                     "pipeline": [
                         {
                             "step": "extract",
