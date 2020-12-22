@@ -16,6 +16,11 @@ class Config:
     DEBUG = False
     TESTING = False
 
+    # User defined custom functions
+    PQL_CUSTOM_METHODS = {
+        # "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(index - 1) + step["params"]
+    }
+
     @staticmethod
     def init_app(app):
         pass
