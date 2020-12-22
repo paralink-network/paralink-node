@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "066d5a932cce72f76915badfd69b07c437e16292096990de28d5f524f126feec"
+            "sha256": "270223bfd456e37c34b5de9b8487b0f5b27a714bd983abbc84956a70fff75716"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -153,6 +153,13 @@
             ],
             "version": "==0.2.0"
         },
+        "base58": {
+            "hashes": [
+                "sha256:365c9561d9babac1b5f18ee797508cd54937a724b6e419a130abad69cec5ca79",
+                "sha256:447adc750d6b642987ffc6d397ecd15a799852d5f6a1d308d384500243825058"
+            ],
+            "version": "==2.0.1"
+        },
         "certifi": {
             "hashes": [
                 "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c",
@@ -255,6 +262,14 @@
             ],
             "version": "==1.1.1"
         },
+        "ipfshttpclient": {
+            "hashes": [
+                "sha256:a45fb0ef087d71647c77b02e0cb3a033045377f134971dfcdc1c6f21cd8ad87c",
+                "sha256:ada7d7c40879ebf8a736c1ff7c690ddb574a120c2226dc982d44156408de426a"
+            ],
+            "index": "pypi",
+            "version": "==0.7.0a1"
+        },
         "ipytest": {
             "hashes": [
                 "sha256:72dcbb56ddfd34d896d1a46bf26aef5cdc187a584b8df9d8da41788094587aac",
@@ -344,6 +359,13 @@
             ],
             "version": "==1.1.1"
         },
+        "multiaddr": {
+            "hashes": [
+                "sha256:30b2695189edc3d5b90f1c303abb8f02d963a3a4edf2e7178b975eb417ab0ecf",
+                "sha256:5c0f862cbcf19aada2a899f80ef896ddb2e85614e0c8f04dd287c06c69dac95b"
+            ],
+            "version": "==0.0.9"
+        },
         "multidict": {
             "hashes": [
                 "sha256:02b2ea2bb1277a970d238c5c783023790ca94d386c657aeeb165259950951cc6",
@@ -381,6 +403,13 @@
                 "sha256:ec8bc0ab00c76c4260a201eaa58812ea8b1b7fde0ecf5f9c9365a182bd4691ed"
             ],
             "version": "==5.0.0"
+        },
+        "netaddr": {
+            "hashes": [
+                "sha256:9666d0232c32d2656e5e5f8d735f58fd6c7457ce52fc21c98d45f2af78f990ac",
+                "sha256:d6cc57c7a07b1d9d2e917aa8b36ae8ce61c35ba3fcd1b83ca31c5a0ee2b5a243"
+            ],
+            "version": "==0.8.0"
         },
         "numpy": {
             "hashes": [
@@ -735,6 +764,12 @@
             ],
             "markers": "sys_platform != 'win32' and implementation_name == 'cpython'",
             "version": "==0.14.0"
+        },
+        "varint": {
+            "hashes": [
+                "sha256:a6ecc02377ac5ee9d65a6a8ad45c9ff1dac8ccee19400a5950fb51d594214ca5"
+            ],
+            "version": "==1.0.2"
         },
         "wcwidth": {
             "hashes": [

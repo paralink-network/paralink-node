@@ -23,6 +23,7 @@ numpy = "*"
 aioresponses = "*"
 asyncpg = "*"
 pytest-mock = "*"
+ipfshttpclient = "==0.7.0a1"
 
 [requires]
 python_version = "3.8"
