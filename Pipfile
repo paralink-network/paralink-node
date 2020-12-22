@@ -21,6 +21,8 @@ ipytest = "*"
 pprintpp = "*"
 numpy = "*"
 aioresponses = "*"
+asyncpg = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.8"

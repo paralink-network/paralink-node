@@ -1,8 +1,9 @@
 from decimal import Decimal
 import typing
 
-from src.pql.exceptions import MethodNotFound, NoInputValue
+from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
+from src.pql.handlers.sql_handler import SqlHandler
 from src.config import Config
 
 
@@ -31,12 +32,22 @@ class Pipeline:
         for i, step in enumerate(self.pipeline["pipeline"]):
             if step["step"] == "extract":
                 result = await self.extract(step)
-            if step["step"] == "traverse":
+            elif step["step"] == "traverse":
                 result = await self.traverse(step, i)
-            if step["step"] == "get_index":
+            elif step["step"] == "get_index":
                 result = await self.get_index(step, i)
-            if step["step"] == "math":
+            elif step["step"] == "math":
                 result = await self.math(step, i)
+            elif step["step"].startswith("custom"):
+                custom_step = step["step"].split(".")[-1]
+
+                if custom_step in self.config.PQL_CUSTOM_METHODS:
+                    result = self.config.PQL_CUSTOM_METHODS[custom_step](step, i, self)
+
+                else:
+                    raise StepNotFound(f"custom step \"{step['step']}\" not found")
+            else:
+                raise StepNotFound(f"step \"{step['step']}\" not found")
 
             self.step_results.append(result)
 
@@ -51,6 +62,8 @@ class Pipeline:
         """
         if step["method"].startswith("http"):
             return await RestApiHandler.execute(step)
+        if step["method"].startswith("sql"):
+            return await SqlHandler.execute(step)
         else:
             raise MethodNotFound(
                 f"handler for extract step method \"{step['method']}\" not found.",

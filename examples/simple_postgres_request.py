@@ -5,35 +5,27 @@ from aiohttp import ClientSession
 
 
 async def main():
-    """Obtains Bitcoin price from a single API endpoint.
+    """Obtains Bitcoin price from a PostgreSQL DB.
+
+    You should first change the URI of SQL to your local instance.
     """
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
-        "name": "Simple HTTP GET request",
+        "name": "Simple SQL request",
         "psql_version": "0.1",
         "sources": [
             {
-                "name": "Bitcoin price CoinGecko",
+                "name": "Bitcoin price PostgreSQL",
                 "pipeline": [
-                    # first perform http get request to coingecko api
                     {
                         "step": "extract",
-                        "method": "http.get",
-                        "uri": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+                        "method": "sql.postgres",
+                        "uri": "postgres://user:password@localhost/my_database_name",
+                        "query": "select * FROM (VALUES ('BTC', 20000)) AS t (symbol, price);",
                     },
-                    # the resulting json will look like
-                    # {
-                    # "bitcoin": {
-                    # "usd": 20551
-                    # }
-                    # }
-                    # therefore we have to traverse the json
-                    {
-                        "step": "traverse",
-                        "method": "json",
-                        "params": ["bitcoin", "usd"],
-                    },
+                    {"step": "get_index", "params": 0,},
+                    {"step": "traverse", "method": "json", "params": ["price"],},
                 ],
             }
         ],
