@@ -23,8 +23,13 @@ pipenv sync
 ./paralink-node
 ```
 
-The node will by default listen on port `7424`, where you can submit your JSON RPC queries through the `execute_pql` method. See [examples](examples) folder for some examples on how to use the node (e.g. simple HTTP GET request can be seen in [simple_get_request.py](examples/simple_get_request.py)).
+The node will by default listen on port `7424`.
 
+The node exposes two JSON RPC methods, which will execute PQL depending on the location:
+ - `execute_pql(pql_json)`: submit PQL JSON in the JSON RPC request (see [simple_get_request.py](examples/simple_get_request.py))
+ - `execute_ipfs(ipfs_address, ipfs_hash)`: submit IPFS node address and IPFS hash where your PQL JSON is located (see [examples/ipfs_request.py](examples/ipfs_request.py))
+
+Furthermore see [examples](examples) folder for additional examples on how to use the node.
 
 ## Docs
 
