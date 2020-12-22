@@ -10,11 +10,11 @@ async def main():
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
-        "name": "simple http get request",
+        "name": "Simple HTTP GET request",
         "psql_version": "0.1",
         "sources": [
             {
-                "name": "bitcoin price etl",
+                "name": "Bitcoin price CoinGecko",
                 "pipeline": [
                     # first perform http get request to coingecko api
                     {
