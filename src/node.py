@@ -21,6 +21,7 @@ def parse_arguments():
     )
     parser.add_argument("-H", "--host", help="specify host", default="127.0.0.1")
     parser.add_argument("-p", "--port", help="specify JSON RPC port", default=7424)
+    parser.add_argument("-t", "--timeout", help="specify IPFS GET timeout", default=3)
 
     return parser.parse_args()
 
