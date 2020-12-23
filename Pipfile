@@ -24,6 +24,9 @@ aioresponses = "*"
 asyncpg = "*"
 pytest-mock = "*"
 ipfshttpclient = "==0.7.0a1"
+sanic-jinja2 = "*"
+sanic-session = "*"
+pdbpp = "*"
 
 [requires]
 python_version = "3.8"
