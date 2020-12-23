@@ -4,7 +4,7 @@ Paralink Node is responsible for executing ETL pipelines and PQL queries. The re
 all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
 
 ## Configure
-Before running the node, please inspect `.env`.
+Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables.
 
 ## Run
 
@@ -13,7 +13,6 @@ We suggest using Docker to run the image:
 ```
 docker build -t paralink-node .
 docker run -it -p 7424:7424 paralink-node ./paralink-node -H 0.0.0.0
-
 ```
 
 Otherwise you can build the node yourself:
@@ -30,6 +29,10 @@ The node exposes two JSON RPC methods, which will execute PQL depending on the l
  - `execute_ipfs(ipfs_address, ipfs_hash)`: submit IPFS node address and IPFS hash where your PQL JSON is located (see [examples/ipfs_request.py](examples/ipfs_request.py))
 
 Furthermore see [examples](examples) folder for additional examples on how to use the node.
+
+## Web UI
+
+A Web UI is accessible on [localhost:7424](http://localhost:7424). It lists all your local IPFS files as well as allows you to create your own PQL definitions, test them and save them to IPFS.
 
 ## Docs
 
