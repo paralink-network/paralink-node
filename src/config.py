@@ -13,9 +13,9 @@ class Config:
 
     # Ethereum
     ETHERSCAN_KEY = getenv("ETHERSCAN_KEY")
-    INFURA_KEY = getenv("INFURA_KEY")
     GETH_HTTP_RPC = getenv("GETH_HTTP_RPC", "http://localhost:8745")
     IPFS_API_SERVER_ADDRESS = getenv("IPFS_API_SERVER_ADDRESS")
+    WEB3_PROVIDER_URI = getenv("WEB3_PROVIDER_URI")
 
     TEMPLATE_PQL_DEFINITION = {
         "name": "My job name",
