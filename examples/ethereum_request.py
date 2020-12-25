@@ -38,7 +38,8 @@ async def main():
                         "method": "eth.balance",
                         "address": "0x9b89202Fc32c294Df4B2b52830fF40B3EC0F0369",
                         "params": {
-                            "block": 11514560,  # optional (defaults to 'latest')
+                            "block": "latest",
+                            "num_confirmations": 30,  # the desired finality: `latest` - num_confirmations block
                         },
                     },
                 ],
