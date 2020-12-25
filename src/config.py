@@ -17,6 +17,9 @@ class Config:
     IPFS_API_SERVER_ADDRESS = getenv("IPFS_API_SERVER_ADDRESS")
     WEB3_PROVIDER_URI = getenv("WEB3_PROVIDER_URI")
 
+    # Default number of confirmations for ETH finality
+    DEFAULT_NUM_CONFIRMATIONS = 40
+
     TEMPLATE_PQL_DEFINITION = {
         "name": "My job name",
         "psql_version": "0.1",

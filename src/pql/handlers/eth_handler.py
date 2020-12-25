@@ -34,13 +34,23 @@ class EthHandler(Handler):
 
             if "params" in step:
                 EthHandler.require_params(step["params"], ["block"])
-                block = step["params"]["block"]
-            else:
-                block = "latest"
 
+                params = step["params"]
+                num_confirmations = (
+                    Config().DEFAULT_NUM_CONFIRMATIONS
+                    if "num_confirmations" not in params
+                    else params["num_confirmations"]
+                )
+
+                block = (
+                    w3.eth.blockNumber - num_confirmations
+                    if params["block"] == "latest"
+                    else params["block"]
+                )
             try:
                 logger.info(
-                    f"Obtaining balance for address {step['address']} (block: {block})"
+                    f"Obtaining balance for address {step['address']} (block: {block} | orig: {params['block']}), "
+                    f"num_confirmations: {num_confirmations}"
                 )
                 return w3.eth.getBalance(step["address"], block_identifier=block)
             except Exception as e:
@@ -53,7 +63,17 @@ class EthHandler(Handler):
             # Parse params
             params = step["params"]
             args = params["args"]
-            block = params["block"] if "block" in params else "latest"
+            num_confirmations = (
+                Config().DEFAULT_NUM_CONFIRMATIONS
+                if "num_confirmations" not in params
+                else params["num_confirmations"]
+            )
+
+            block = (
+                w3.eth.blockNumber - num_confirmations
+                if params["block"] == "latest"
+                else params["block"]
+            )
 
             # Get contract ABI from Etherscan API
             data_abi = await EthHandler.fetch_from_explorer(step["address"], "getabi")
@@ -66,7 +86,8 @@ class EthHandler(Handler):
                 fun = con.get_function_by_signature(params["function"])
 
                 logger.info(
-                    f"Calling function {fun} on contract address {step['address']} (block: {block})"
+                    f"Obtaining balance for address {step['address']} (block: {block} | orig: {params['block']}), "
+                    f"num_confirmations: {num_confirmations}"
                 )
                 return fun(*args).call(block_identifier=block)
             except Exception as e:
