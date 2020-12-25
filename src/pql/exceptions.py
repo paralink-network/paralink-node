@@ -15,6 +15,16 @@ class PqlDecodingError(Error):
         self.data = UNSET
 
 
+class ExternalError(Error):
+    """ ExternalError is triggered when there is an issue with external dependency (such as IPFS, ETH node).
+    """
+
+    def __init__(self, message: str):
+        self.code = -32002
+        self.message = message
+        self.data = UNSET
+
+
 class NoInputValue(Error):
     """NoInputValue is triggered when there is not value from the previous step to act
     upon.
@@ -42,5 +52,15 @@ class MethodNotFound(Error):
 
     def __init__(self, message: str):
         self.code = -32011
+        self.message = message
+        self.data = UNSET
+
+
+class ArgumentError(Error):
+    """ ArgumentError is triggered when PQL arguments are incorrect.
+    """
+
+    def __init__(self, message: str):
+        self.code = -32012
         self.message = message
         self.data = UNSET

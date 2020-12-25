@@ -27,6 +27,7 @@ ipfshttpclient = "==0.7.0a1"
 sanic-jinja2 = "*"
 sanic-session = "*"
 pdbpp = "*"
+web3 = "*"
 
 [requires]
 python_version = "3.8"
