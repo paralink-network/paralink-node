@@ -45,7 +45,7 @@ def create_app(args, environment="development") -> Sanic:
             ipfs = ipfshttpclient.connect(ipfs_address)
 
             # Fetch the JSON from the hash
-            req = ipfs.get_json(ipfs_hash, timeout=args.timeout)
+            req = ipfs.get_json(ipfs_hash, timeout=int(args["--timeout"]))
         except DecodingError:
             raise PqlDecodingError("object decoding error, expecting JSON format.")
         except ReadTimeout:
@@ -87,7 +87,7 @@ def create_app(args, environment="development") -> Sanic:
         ipfs = ipfshttpclient.connect(app.config["IPFS_API_SERVER_ADDRESS"])
 
         try:
-            js = ipfs.get_json(ipfs_hash, timeout=args.timeout)
+            js = ipfs.get_json(ipfs_hash, timeout=int(args["--timeout"]))
 
             return {"json": js, "hash": ipfs_hash}
         except DecodingError:

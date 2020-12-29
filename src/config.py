@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 
 from src.pql.handlers.rest_api_handler import RestApiHandler
 
+__version__ = "0.1.0"
+
 # Load the main configuration file
 load_dotenv(".env")
 
@@ -46,6 +48,24 @@ class Config:
             },
         ],
         "aggregate": {"method": "mean"},
+        "callback": [
+            {
+                "type": "chain.eth",
+                "params": {
+                    "address": "<ORACLE ETH ADDRESS>",
+                    "function": "fulfillRequest",
+                    "args": [],
+                },
+            },
+            {
+                "type": "chain.plasm",
+                "params": {
+                    "address": "<ORACLE PLASM ADDRESS>",
+                    "function": "fulfillRequest",
+                    "args": [],
+                },
+            },
+        ],
     }
 
     # User defined custom functions
