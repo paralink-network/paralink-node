@@ -28,6 +28,7 @@ sanic-jinja2 = "*"
 sanic-session = "*"
 pdbpp = "*"
 web3 = "*"
+docopt = "*"
 
 [requires]
 python_version = "3.8"
