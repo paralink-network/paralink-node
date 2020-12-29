@@ -2,7 +2,7 @@ import pytest
 from src import create_app
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def app():
     app = create_app(None)
     yield app
