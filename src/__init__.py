@@ -16,7 +16,7 @@ from src.pql.parser import parse_and_execute
 from src.pql.exceptions import PqlDecodingError
 
 
-def create_app(args, environment="development") -> Sanic:
+def create_app(args={}, environment="development") -> Sanic:
     app = Sanic("src")
     app.config.from_object(config[environment])
 
