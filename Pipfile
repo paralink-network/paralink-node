@@ -29,6 +29,10 @@ sanic-session = "*"
 pdbpp = "*"
 web3 = "*"
 docopt = "*"
+alembic = "*"
+gino = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8"
