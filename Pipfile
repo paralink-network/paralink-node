@@ -35,6 +35,7 @@ psycopg2 = "*"
 jedi = "==0.17.2"
 eth-brownie = "==1.12.3"
 web3 = "==5.11.1"
+celery = "*"
 
 [requires]
 python_version = "3.8"
