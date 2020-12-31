@@ -4,11 +4,11 @@ import typing
 import aiohttp
 import asyncpg
 
-from web3 import Web3
 from sanic.log import logger
 
 
 from src.config import Config
+from src.utils import w3
 from src.pql.handlers.handler import Handler
 from src.pql.exceptions import MethodNotFound, ExternalError, ArgumentError
 
@@ -22,8 +22,6 @@ class EthHandler(Handler):
     async def execute(step: dict) -> typing.Any:
         method = step["method"].split(".")[-1]
 
-        # Connect to W3
-        w3 = Web3()
         if not w3.isConnected():
             raise ExternalError(
                 "Could not connect to Ethereum node, check WEB3_PROVIDER_URI in .env file."

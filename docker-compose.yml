@@ -1,0 +1,32 @@
+version: "3.4"
+services:
+  paralink-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: paralink-node
+    env_file:
+      - .env
+    command: ./paralink-node node start
+    ports:
+      - "7424:7424"
+    restart: on-failure
+
+  celery_worker:
+    image: paralink-node
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    command: pipenv run celery -A src.process.processor worker -l DEBUG -Q collect,execute
+    depends_on:
+      - rabbitmq
+    restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:latest
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+    restart: on-failure

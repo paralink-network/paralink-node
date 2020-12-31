@@ -27,8 +27,17 @@ ipfshttpclient = "==0.7.0a1"
 sanic-jinja2 = "*"
 sanic-session = "*"
 pdbpp = "*"
-web3 = "*"
 docopt = "*"
+alembic = "*"
+gino = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
+jedi = "==0.17.2"
+web3 = "==5.11.1"
+celery = "*"
 
 [requires]
 python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
