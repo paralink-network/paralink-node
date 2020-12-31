@@ -19,6 +19,7 @@ class Config:
     IPFS_API_SERVER_ADDRESS = getenv("IPFS_API_SERVER_ADDRESS")
     WEB3_PROVIDER_URI = getenv("WEB3_PROVIDER_URI")
 
+    CELERY_BROKER_URL = getenv("CELERY_BROKER_URL")
     DATABASE_URL = getenv("DATABASE_URL")
 
     # Default number of confirmations for ETH finality
