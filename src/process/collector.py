@@ -1,9 +1,15 @@
 import time
 
+from src.config import Config
+from src.models import db, ContractOracle
+from src.utils import w3
 from src.process import processor
 from src.process.executor import handle_request_event
-from src.config import Config
-from src.utils import w3
+
+
+async def start_collecting():
+    for contract_oracle in await ContractOracle.query.gino.all():
+        listen_for_request_events.delay(contract_oracle.id, 2)
 
 
 @processor.task
@@ -22,3 +28,4 @@ def listen_for_request_events(address: str, poll_interval: int) -> None:
         for event in event_filter.get_new_entries():
             handle_request_event.delay(event)
         time.sleep(poll_interval)
+

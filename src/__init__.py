@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from requests.exceptions import ReadTimeout
@@ -14,6 +15,8 @@ from ipfshttpclient.exceptions import DecodingError
 from src.config import config
 from src.pql.parser import parse_and_execute
 from src.pql.exceptions import PqlDecodingError
+from src.process.collector import start_collecting
+from src.models import db
 
 
 def create_app(args={}, environment="development") -> Sanic:
@@ -22,9 +25,13 @@ def create_app(args={}, environment="development") -> Sanic:
 
     jsonrpc = SanicJsonrpc(app, post_route="/rpc", ws_route="/ws")
 
+    asyncio.get_event_loop().run_until_complete(db.set_bind(app.config["DATABASE_URL"]))
+
     # Set UI
     jinja = SanicJinja2(app)
     session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
+
+    asyncio.get_event_loop().run_until_complete(start_collecting())
 
     @jsonrpc
     async def execute_pql(pql_json: str) -> str:
@@ -121,5 +128,12 @@ def create_app(args={}, environment="development") -> Sanic:
             )
         except Exception as e:
             return response.json({"error": e.message})
+
+    @app.get("/add_contract_oracle/<address>")
+    async def add_contract_oracle(request, address):
+        from src.models import ContractOracle
+
+        await ContractOracle.create(id=address, active=True)
+        return response.json({"result": "ok"})
 
     return app

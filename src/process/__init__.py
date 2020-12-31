@@ -1,8 +1,10 @@
 from celery import Celery
 
+from src.config import Config
+
 processor = Celery(
     "job-processor",
-    broker="amqp://localhost",
+    broker=Config().CELERY_BROKER_URL,
     include=["src.process.collector", "src.process.executor"],
 )
 
