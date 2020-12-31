@@ -6,13 +6,19 @@ all supported chains via callbacks. Paralink Node is also a dependency to the on
 ## Configure
 Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables.
 
+Migrate the DB with:
+
+```
+pipenv run alembic upgrade head
+```
+
 ## Run
 
 We suggest using Docker to run the image:
 
 ```
 docker build -t paralink-node .
-docker run -it -p 7424:7424 paralink-node ./paralink-node -H 0.0.0.0
+docker run -it -p 7424:7424 paralink-node ./paralink-node node start --host 0.0.0.0
 ```
 
 Otherwise you can build the node yourself:
