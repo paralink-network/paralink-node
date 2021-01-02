@@ -1,0 +1,45 @@
+{
+        "name": "My job name",
+        "psql_version": "0.1",
+        "sources": [
+            {
+                "name": "Pipeline 1 name",
+                "pipeline": [
+                    {
+                        "step": "extract",
+                        "method": "http.get",
+                        "uri": "https://my-crypto-api.com/tickers"
+                    }
+                ]
+            },
+            {
+                "name": "Pipeline 2 name",
+                "pipeline": [
+                    {
+                        "step": "extract",
+                        "method": "http.get",
+                        "uri": "https://my-crypto-api.com/tickers"
+                    }
+                ]
+            }
+        ],
+        "aggregate": {"method": "mean"},
+        "callback": [
+            {
+                "type": "chain.eth",
+                "params": {
+                    "address": "<ORACLE ETH ADDRESS>",
+                    "function": "fulfillRequest",
+                    "args": []
+                }
+            },
+            {
+                "type": "chain.plasm",
+                "params": {
+                    "address": "<ORACLE PLASM ADDRESS>",
+                    "function": "fulfillRequest",
+                    "args": []
+                }
+            }
+        ]
+}
