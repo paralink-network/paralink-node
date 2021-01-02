@@ -1,6 +1,9 @@
 from celery import Celery
 
 from src.config import config
+from src.network import accounts
+
+accounts.load()
 
 processor = Celery(
     "job-processor",
