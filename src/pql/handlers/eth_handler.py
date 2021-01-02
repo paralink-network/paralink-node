@@ -7,8 +7,8 @@ import asyncpg
 from sanic.log import logger
 
 
-from src.config import Config
-from src.utils import w3
+from src.config import config
+from src.network.web3 import w3
 from src.pql.handlers.handler import Handler
 from src.pql.exceptions import MethodNotFound, ExternalError, ArgumentError
 
@@ -35,7 +35,7 @@ class EthHandler(Handler):
 
                 params = step["params"]
                 num_confirmations = (
-                    Config().DEFAULT_NUM_CONFIRMATIONS
+                    config.DEFAULT_NUM_CONFIRMATIONS
                     if "num_confirmations" not in params
                     else params["num_confirmations"]
                 )
@@ -62,7 +62,7 @@ class EthHandler(Handler):
             params = step["params"]
             args = params["args"]
             num_confirmations = (
-                Config().DEFAULT_NUM_CONFIRMATIONS
+                config.DEFAULT_NUM_CONFIRMATIONS
                 if "num_confirmations" not in params
                 else params["num_confirmations"]
             )
@@ -108,7 +108,7 @@ class EthHandler(Handler):
             "module": "contract",
             "action": action,
             "address": address,
-            "apiKey": Config().ETHERSCAN_KEY,
+            "apiKey": config.ETHERSCAN_KEY,
         }
 
         # Check for existence of ETHERSCAN_KEY

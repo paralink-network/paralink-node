@@ -5,8 +5,8 @@ from celery.utils.log import get_task_logger
 import ipfshttpclient
 
 from . import processor
-from src.config import Config
-from src.utils import w3
+from src.config import config
+from src.network.web3 import w3
 
 from src.pql.parser import parse_and_execute
 from src.utils.ipfs import bytes32_to_ipfs
@@ -29,7 +29,7 @@ def handle_request_event(self, event) -> None:
     expiration = datetime.fromtimestamp(args["expiration"])
 
     try:
-        ipfs = ipfshttpclient.connect(Config.IPFS_API_SERVER_ADDRESS)
+        ipfs = ipfshttpclient.connect(config.IPFS_API_SERVER_ADDRESS)
         req = ipfs.get_json(ipfs_hash, timeout=3)
 
         logger.debug(f"Obtained PQL definition {req}")

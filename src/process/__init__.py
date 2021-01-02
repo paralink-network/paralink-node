@@ -1,10 +1,10 @@
 from celery import Celery
 
-from src.config import Config
+from src.config import config
 
 processor = Celery(
     "job-processor",
-    broker=Config().CELERY_BROKER_URL,
+    broker=config.CELERY_BROKER_URL,
     include=["src.process.collector", "src.process.executor"],
 )
 
