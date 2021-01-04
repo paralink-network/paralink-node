@@ -19,9 +19,9 @@ from src.process.collector import start_collecting
 from src.models import db
 
 
-def create_app(args={}, environment="development") -> Sanic:
+def create_app(args={}) -> Sanic:
     app = Sanic("src")
-    app.config.from_object(config[environment])
+    app.config.from_object(config)
 
     jsonrpc = SanicJsonrpc(app, post_route="/rpc", ws_route="/ws")
 

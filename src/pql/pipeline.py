@@ -5,7 +5,7 @@ from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
 from src.pql.handlers.eth_handler import EthHandler
-from src.config import Config
+from src.config import config
 
 
 class Pipeline:
@@ -20,7 +20,6 @@ class Pipeline:
         """
         self.pipeline = pipeline
         self.step_results = []
-        self.config = Config()
 
     async def execute(self) -> None:
         """Execute `self.pipeline` step by step.
@@ -42,8 +41,8 @@ class Pipeline:
             elif step["step"].startswith("custom"):
                 custom_step = step["step"].split(".")[-1]
 
-                if custom_step in self.config.PQL_CUSTOM_METHODS:
-                    result = self.config.PQL_CUSTOM_METHODS[custom_step](step, i, self)
+                if custom_step in config.PQL_CUSTOM_METHODS:
+                    result = config.PQL_CUSTOM_METHODS[custom_step](step, i, self)
 
                 else:
                     raise StepNotFound(f"custom step \"{step['step']}\" not found")

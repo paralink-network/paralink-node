@@ -35,6 +35,7 @@ psycopg2 = "*"
 jedi = "==0.17.2"
 web3 = "==5.11.1"
 celery = "*"
+stdiomask = "*"
 
 [requires]
 python_version = "3.8"

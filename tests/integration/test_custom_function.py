@@ -64,15 +64,16 @@ async def test_custom_function(client, mocker, pql):
             payload={"bitcoin": {"usd": 25000}},
         )
 
-        obj = MagicMock()
-        obj.PQL_CUSTOM_METHODS = {
+        PQL_CUSTOM_METHODS = {
             "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(
                 index - 1
             )
             + step["params"]
         }
 
-        mocker.patch("src.pql.pipeline.Config", return_value=obj)
+        mocker.patch.dict(
+            "src.pql.pipeline.config.PQL_CUSTOM_METHODS", PQL_CUSTOM_METHODS
+        )
 
         request = {
             "jsonrpc": "2.0",
