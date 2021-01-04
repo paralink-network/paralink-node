@@ -8,6 +8,8 @@ from src.process.executor import handle_request_event
 
 
 async def start_collecting():
+    """Initiates collecting tasks for addresses specified in the PostgreSQL DB.
+    """
     for contract_oracle in await ContractOracle.query.gino.all():
         listen_for_request_events.delay(contract_oracle.id, 2)
 
