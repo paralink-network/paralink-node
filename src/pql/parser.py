@@ -53,7 +53,6 @@ class Parser:
             if agg_method == "user_query"
             else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]
         )
-        print(pipeline_results)
         if agg_method == "mean":
             return np.mean(pipeline_results)
         elif agg_method == "median":
@@ -67,7 +66,6 @@ class Parser:
             parsed_results = {
                 result_name: to_df(result, parsers[i]) for i, (result_name, result) in enumerate(pipeline_results.items())
             }
-            print(parsed_results)
             return await execute_user_query(
                 parsed_results,
                 self.pql["aggregate"]["query"],
