@@ -5,6 +5,7 @@ from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
 from src.pql.handlers.eth_handler import EthHandler
+from src.pql.common import execute_user_query, to_df
 from src.config import config
 
 
@@ -46,6 +47,8 @@ class Pipeline:
 
                 else:
                     raise StepNotFound(f"custom step \"{step['step']}\" not found")
+            elif step["step"] == "user_query":
+                result = await self.user_query(step, i)
             else:
                 raise StepNotFound(f"step \"{step['step']}\" not found")
 
@@ -135,6 +138,12 @@ class Pipeline:
                 f"handler for math step method \"{step['method']}\" not found."
             )
 
+    async def user_query(self, step: dict, index: int):
+        df = to_df(self.get_value_for_step(index - 1), step["parser"])
+        return await execute_user_query(
+            {"response": df}, step["query"], step.get("result")
+        )
+
     def get_value_for_step(self, i: int) -> typing.Any:
         """get_value_for_step obtains the value from previous step if it exists.
 
@@ -152,4 +161,3 @@ class Pipeline:
             raise NoInputValue(f"Step with index {i} has no input value.",)
         else:
             return self.step_results[i]
-

@@ -64,3 +64,23 @@ class ArgumentError(Error):
         self.code = -32012
         self.message = message
         self.data = UNSET
+
+
+class ParserNotFound(Error):
+    """UserQueryError is triggered when user query fails.
+    """
+
+    def __init__(self, message: str):
+        self.code = -32013
+        self.message = message
+        self.data = UNSET
+
+
+class UserQueryError(Error):
+    """UserQueryError is triggered when user query fails.
+    """
+
+    def __init__(self, message: str):
+        self.code = -32014
+        self.message = message
+        self.data = UNSET
