@@ -76,11 +76,21 @@ class ParserNotFound(Error):
         self.data = UNSET
 
 
+class ParseDataError(Error):
+    """ParseDataError is triggered when data can not be parsed.
+    """
+
+    def __init__(self, message: str):
+        self.code = -32014
+        self.message = message
+        self.data = UNSET
+
+
 class UserQueryError(Error):
     """UserQueryError is triggered when user query fails.
     """
 
     def __init__(self, message: str):
-        self.code = -32014
+        self.code = -32015
         self.message = message
         self.data = UNSET

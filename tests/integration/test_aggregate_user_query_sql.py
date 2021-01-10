@@ -41,11 +41,14 @@ def pql_json():
                 ],
             },
         ],
-        "aggregate": {"method": "user_query",
-                      "parsers": ["json", "list", "json"],
-                      "query": "SELECT AVG(price) FROM (SELECT `bitcoin.usd` AS price FROM result_0 UNION SELECT `6` AS price FROM result_1 UNION SELECT `bpi.USD.rate_float` AS price FROM result_2)",
-                      "result": True},
+        "aggregate": {
+            "method": "query.sql",
+            "parsers": ["json", "list", "json"],
+            "query": "SELECT AVG(price) FROM (SELECT `bitcoin.usd` AS price FROM result_0 UNION SELECT `6` AS price FROM result_1 UNION SELECT `bpi.USD.rate_float` AS price FROM result_2)",
+            "result": True,
+        },
     }
+
 
 @pytest.fixture
 def mock_responses():
@@ -124,4 +127,3 @@ async def test_mean(client, pql_json, mock_responses):
     print(res)
 
     assert res["result"] == "24000.0"
-

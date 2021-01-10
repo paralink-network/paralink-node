@@ -6,7 +6,7 @@ import numpy as np
 
 from src.pql.pipeline import Pipeline
 from src.pql.exceptions import MethodNotFound
-from src.pql.common import to_df, execute_user_query
+from src.pql.query_sql import execute_sql_query, construct_aggregate_sql_payload
 
 
 class Parser:
@@ -49,8 +49,8 @@ class Parser:
         """
         agg_method = self.pql["aggregate"]["method"]
         pipeline_results = (
-            {f"result_{i}": pipeline.step_results[-1] for i, pipeline in enumerate(self.pipelines)}
-            if agg_method == "user_query"
+            construct_aggregate_sql_payload(self.pipelines, self.pql["aggregate"]["parsers"])
+            if agg_method == "query.sql"
             else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]
         )
         if agg_method == "mean":
@@ -61,13 +61,9 @@ class Parser:
             return np.amax(pipeline_results)
         elif agg_method == "min":
             return np.amin(pipeline_results)
-        elif agg_method == "user_query":
-            parsers = self.pql["aggregate"]["parsers"]
-            parsed_results = {
-                result_name: to_df(result, parsers[i]) for i, (result_name, result) in enumerate(pipeline_results.items())
-            }
-            return await execute_user_query(
-                parsed_results,
+        elif agg_method == "query.sql":
+            return await execute_sql_query(
+                pipeline_results,
                 self.pql["aggregate"]["query"],
                 self.pql["aggregate"]["result"],
             )

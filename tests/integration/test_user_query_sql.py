@@ -23,8 +23,8 @@ async def test_user_query(client):
                             "uri": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
                         },
                         {
-                            "step": "user_query",
-                            "parser": "json",
+                            "step": "query.sql",
+                            "method": "json",
                             "query": "SELECT `bitcoin.usd` FROM response",
                             "result": True
                         },
