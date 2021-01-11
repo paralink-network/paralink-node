@@ -1,7 +1,6 @@
 import json
-import logging
+import typing
 from os import getenv
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -45,7 +44,7 @@ class Config:
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
 
     # User defined custom functions
-    PQL_CUSTOM_METHODS = {
+    PQL_CUSTOM_METHODS: typing.Dict[str, typing.Callable] = {
         # "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(index - 1) + step["params"]
     }
 

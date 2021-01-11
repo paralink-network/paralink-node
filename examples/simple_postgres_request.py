@@ -1,5 +1,5 @@
-from asyncio import get_event_loop
 import json
+from asyncio import get_event_loop
 
 from aiohttp import ClientSession
 
@@ -24,8 +24,15 @@ async def main():
                         "uri": "postgres://user:password@localhost/my_database_name",
                         "query": "select * FROM (VALUES ('BTC', 20000)) AS t (symbol, price);",
                     },
-                    {"step": "get_index", "params": 0,},
-                    {"step": "traverse", "method": "json", "params": ["price"],},
+                    {
+                        "step": "get_index",
+                        "params": 0,
+                    },
+                    {
+                        "step": "traverse",
+                        "method": "json",
+                        "params": ["price"],
+                    },
                 ],
             }
         ],

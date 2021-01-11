@@ -1,11 +1,11 @@
-from decimal import Decimal
 import asyncio
 import typing
+from decimal import Decimal
 
 import numpy as np
 
-from src.pql.pipeline import Pipeline
 from src.pql.exceptions import MethodNotFound
+from src.pql.pipeline import Pipeline
 
 
 class Parser:
@@ -20,7 +20,7 @@ class Parser:
             pql (dict): a valid PQL dict object
         """
         self.pql = pql
-        self.pipelines = []
+        self.pipelines: typing.List[Pipeline] = []
 
     async def execute(self) -> typing.Any:
         """Executes given PQL dict object.
@@ -44,8 +44,7 @@ class Parser:
             return self.pipelines[-1].step_results[-1]
 
     async def aggregate(self):
-        """Aggregates pipelines results depending on the `method`.
-        """
+        """Aggregates pipelines results depending on the `method`."""
         agg_method = self.pql["aggregate"]["method"]
         pipeline_results = [
             Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines
@@ -60,7 +59,9 @@ class Parser:
         elif agg_method == "min":
             return np.amin(pipeline_results)
         else:
-            raise MethodNotFound(f'aggregate method "{agg_method}" not found.',)
+            raise MethodNotFound(
+                f'aggregate method "{agg_method}" not found.',
+            )
 
 
 async def parse_and_execute(pql: dict) -> typing.Any:
@@ -74,4 +75,3 @@ async def parse_and_execute(pql: dict) -> typing.Any:
         typing.Any: executed result
     """
     return await Parser(pql).execute()
-

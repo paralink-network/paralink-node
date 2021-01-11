@@ -1,5 +1,5 @@
-from asyncio import get_event_loop
 import json
+from asyncio import get_event_loop
 
 from aiohttp import ClientSession
 
@@ -12,7 +12,7 @@ async def main():
         PQL_CUSTOM_METHODS = {
             "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(index - 1) + step["params"]
         }
-   """
+    """
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
@@ -33,7 +33,10 @@ async def main():
                         "params": ["bitcoin", "usd"],
                     },
                     # Here we call our custom function
-                    {"step": "custom.my_add", "params": 10000,},
+                    {
+                        "step": "custom.my_add",
+                        "params": 10000,
+                    },
                 ],
             }
         ],

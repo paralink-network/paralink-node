@@ -1,16 +1,16 @@
 import asyncio
 from datetime import datetime
 
-from celery.utils.log import get_task_logger
 import ipfshttpclient
+from celery.utils.log import get_task_logger
 
-from . import processor
 from src.config import config
+from src.network import accounts
 from src.network.web3 import w3
-
 from src.pql.parser import parse_and_execute
 from src.utils.ipfs import bytes32_to_ipfs
-from src.network import accounts
+
+from . import processor
 
 logger = get_task_logger(__name__)
 

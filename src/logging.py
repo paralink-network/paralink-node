@@ -1,5 +1,6 @@
 import logging
 import sys
+
 from src.config import config
 
 

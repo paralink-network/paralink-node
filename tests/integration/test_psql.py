@@ -22,8 +22,15 @@ async def test_psql_connection(client, mocker):
                         "uri": "postgres://user:password@localhost/my_database_name",
                         "query": "select * FROM (VALUES ('BTC', 20000)) AS t (symbol, price);",
                     },
-                    {"step": "get_index", "params": 0,},
-                    {"step": "traverse", "method": "json", "params": ["price"],},
+                    {
+                        "step": "get_index",
+                        "params": 0,
+                    },
+                    {
+                        "step": "traverse",
+                        "method": "json",
+                        "params": ["price"],
+                    },
                 ],
             }
         ],

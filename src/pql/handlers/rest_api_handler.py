@@ -3,8 +3,8 @@ import typing
 
 import aiohttp
 
-from src.pql.handlers.handler import Handler
 from src.pql.exceptions import MethodNotFound
+from src.pql.handlers.handler import Handler
 
 
 class RestApiHandler(Handler):
@@ -35,4 +35,3 @@ class RestApiHandler(Handler):
                     return json.loads(data)
         else:
             raise MethodNotFound(f'handler for HTTP method "{method}" not found.')
-

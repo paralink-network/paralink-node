@@ -4,8 +4,7 @@ from src.pql.exceptions import ArgumentError
 
 
 class Handler:
-    """ Interface for implementing different handlers.
-    """
+    """Interface for implementing different handlers."""
 
     @staticmethod
     async def execute(pql: dict) -> typing.Any:
@@ -37,4 +36,3 @@ class Handler:
         for param in param_list:
             if param not in step:
                 raise ArgumentError(f"Parameter {param} is required in {step}")
-

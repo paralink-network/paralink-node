@@ -1,8 +1,9 @@
 # from getpass import getpass
-import stdiomask
 import json
 import logging
 from pathlib import Path
+
+import stdiomask
 
 from src.config import config
 from src.network.web3 import w3
@@ -11,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Accounts:
-    """Accounts manages node accounts on different chains.
-    """
+    """Accounts manages node accounts on different chains."""
 
     def __init__(self):
         self.ethkey = None
@@ -30,7 +30,7 @@ class Accounts:
                 private_key = w3.eth.account.decrypt(json.load(fp), password)
                 self.ethkey = w3.eth.account.from_key(private_key)
         else:
-            logger.info(f"Private key not found. A new one will be created.")
+            logger.info("Private key not found. A new one will be created.")
             self.ethkey = w3.eth.account.create()
             self.save(self.ethkey)
 

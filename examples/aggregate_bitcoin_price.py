@@ -1,12 +1,11 @@
-from asyncio import get_event_loop
 import json
+from asyncio import get_event_loop
 
 from aiohttp import ClientSession
 
 
 async def main():
-    """Obtains Bitcoin price from 3 different API endpoints and averages the result.
-    """
+    """Obtains Bitcoin price from 3 different API endpoints and averages the result."""
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
@@ -36,7 +35,10 @@ async def main():
                         "method": "http.get",
                         "uri": "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
                     },
-                    {"step": "get_index", "params": 6,},
+                    {
+                        "step": "get_index",
+                        "params": 6,
+                    },
                 ],
             },
             {

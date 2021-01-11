@@ -1,25 +1,23 @@
 import asyncio
 import json
 
-from requests.exceptions import ReadTimeout
-from sanic import Sanic
-from sanic import response
-from sanic.log import logger
-from sanic_jsonrpc import SanicJsonrpc
-from sanic_session import InMemorySessionInterface
-from sanic_jinja2 import SanicJinja2
-
 import ipfshttpclient
 from ipfshttpclient.exceptions import DecodingError
+from requests.exceptions import ReadTimeout
+from sanic import Sanic, response
+from sanic.log import logger
+from sanic_jinja2 import SanicJinja2
+from sanic_jsonrpc import SanicJsonrpc
+from sanic_session import InMemorySessionInterface
 
 from src.config import config
-from src.pql.parser import parse_and_execute
-from src.pql.exceptions import PqlDecodingError
-from src.process.collector import start_collecting
 from src.models import db
+from src.pql.exceptions import PqlDecodingError
+from src.pql.parser import parse_and_execute
+from src.process.collector import start_collecting
 
 
-def create_app(args={}) -> Sanic:
+def create_app(args={}) -> Sanic:  # noqa: C901
     app = Sanic("src")
     app.config.from_object(config)
 
@@ -99,7 +97,7 @@ def create_app(args={}) -> Sanic:
             return {"json": js, "hash": ipfs_hash}
         except DecodingError:
             return {"error": "Not a JSON file."}
-        except:
+        except Exception:
             return {"error": "Not a file."}
 
     @app.post("/test_pql")

@@ -16,8 +16,7 @@ class PqlDecodingError(Error):
 
 
 class ExternalError(Error):
-    """ ExternalError is triggered when there is an issue with external dependency (such as IPFS, ETH node).
-    """
+    """ExternalError is triggered when there is an issue with external dependency (such as IPFS, ETH node)."""
 
     def __init__(self, message: str):
         self.code = -32002
@@ -37,8 +36,7 @@ class NoInputValue(Error):
 
 
 class StepNotFound(Error):
-    """StepNotFound is triggered when step is not found.
-    """
+    """StepNotFound is triggered when step is not found."""
 
     def __init__(self, message: str):
         self.code = -32010
@@ -47,8 +45,7 @@ class StepNotFound(Error):
 
 
 class MethodNotFound(Error):
-    """MethodNotFound is triggered when pipeline method is not found.
-    """
+    """MethodNotFound is triggered when pipeline method is not found."""
 
     def __init__(self, message: str):
         self.code = -32011
@@ -57,8 +54,7 @@ class MethodNotFound(Error):
 
 
 class ArgumentError(Error):
-    """ ArgumentError is triggered when PQL arguments are incorrect.
-    """
+    """ArgumentError is triggered when PQL arguments are incorrect."""
 
     def __init__(self, message: str):
         self.code = -32012
