@@ -39,7 +39,7 @@ async def execute_sql_query(
     Args:
         request_data: dictionary containing request data formatted as pd.DataFrame.
         query: user defined query to run against request data.
-        result: index of the result.
+        result: bool indicating if the query response is the final result.
 
     Returns:
         typing.Any: sql query result

@@ -138,7 +138,17 @@ class Pipeline:
                 f"handler for math step method \"{step['method']}\" not found."
             )
 
-    async def query_sql(self, step: dict, index: int):
+    async def query_sql(self, step: dict, index: int) -> typing.Any:
+        """"Convert the data from the previous step in the pipeline to a pd.DataFrame
+        and then execute the user defined sql query against it.
+
+        Args:
+            step: step PQL json
+            index: index of the step
+
+        Returns:
+            typing.Any: return of the sql query processing.
+        """
         df = to_df(self.get_value_for_step(index - 1), step["method"])
         return await execute_sql_query(
             {"response": df}, step["query"], step.get("result")

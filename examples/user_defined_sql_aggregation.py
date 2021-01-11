@@ -46,7 +46,7 @@ async def main():
         ],
         "aggregate": {
             "method": "query.sql",
-            "parsers": ["json", "list", "json"],
+            "params": ["json", "list", "json"],
             "query": "SELECT AVG(price) FROM (SELECT `bitcoin.usd` AS price FROM result_0 UNION SELECT `6` AS price FROM result_1 UNION SELECT `bpi.USD.rate_float` AS price FROM result_2)",
             "result": True,
         },

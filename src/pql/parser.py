@@ -49,7 +49,7 @@ class Parser:
         """
         agg_method = self.pql["aggregate"]["method"]
         pipeline_results = (
-            construct_aggregate_sql_payload(self.pipelines, self.pql["aggregate"]["parsers"])
+            construct_aggregate_sql_payload(self.pipelines, self.pql["aggregate"]["params"])
             if agg_method == "query.sql"
             else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]
         )
