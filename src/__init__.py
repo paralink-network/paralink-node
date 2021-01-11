@@ -17,7 +17,7 @@ from src.pql.parser import parse_and_execute
 from src.process.collector import start_collecting
 
 
-def create_app(args={}) -> Sanic:  # noqa: C901
+def create_app(args={}) -> Sanic:
     app = Sanic("src")
     app.config.from_object(config)
 

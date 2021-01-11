@@ -19,4 +19,10 @@ processor.conf.update(
     },
     task_serializer="pickle",
     accept_content=["json", "pickle"],
+    broker_transport_options={
+        "max_retries": 3,
+        "interval_start": 0,
+        "interval_step": 0.2,
+        "interval_max": 0.5,
+    },
 )
