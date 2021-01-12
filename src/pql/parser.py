@@ -6,6 +6,7 @@ import numpy as np
 
 from src.pql.pipeline import Pipeline
 from src.pql.exceptions import MethodNotFound
+from src.pql.query_sql import execute_sql_query, construct_aggregate_sql_payload
 
 
 class Parser:
@@ -47,10 +48,11 @@ class Parser:
         """Aggregates pipelines results depending on the `method`.
         """
         agg_method = self.pql["aggregate"]["method"]
-        pipeline_results = [
-            Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines
-        ]
-
+        pipeline_results = (
+            construct_aggregate_sql_payload(self.pipelines, self.pql["aggregate"]["params"])
+            if agg_method == "query.sql"
+            else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]
+        )
         if agg_method == "mean":
             return np.mean(pipeline_results)
         elif agg_method == "median":
@@ -59,6 +61,12 @@ class Parser:
             return np.amax(pipeline_results)
         elif agg_method == "min":
             return np.amin(pipeline_results)
+        elif agg_method == "query.sql":
+            return await execute_sql_query(
+                pipeline_results,
+                self.pql["aggregate"]["query"],
+                self.pql["aggregate"]["result"],
+            )
         else:
             raise MethodNotFound(f'aggregate method "{agg_method}" not found.',)
 
@@ -74,4 +82,3 @@ async def parse_and_execute(pql: dict) -> typing.Any:
         typing.Any: executed result
     """
     return await Parser(pql).execute()
-

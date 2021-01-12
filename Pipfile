@@ -36,6 +36,8 @@ jedi = "==0.17.2"
 web3 = "==5.11.1"
 celery = "*"
 stdiomask = "*"
+pandas = "*"
+pandasql = "*"
 
 [requires]
 python_version = "3.8"
