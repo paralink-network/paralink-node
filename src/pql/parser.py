@@ -4,9 +4,9 @@ from decimal import Decimal
 
 import numpy as np
 
-from src.pql.pipeline import Pipeline
 from src.pql.exceptions import MethodNotFound
-from src.pql.query_sql import execute_sql_query, construct_aggregate_sql_payload
+from src.pql.pipeline import Pipeline
+from src.pql.query_sql import construct_aggregate_sql_payload, execute_sql_query
 
 
 class Parser:
@@ -48,7 +48,9 @@ class Parser:
         """Aggregates pipelines results depending on the `method`."""
         agg_method = self.pql["aggregate"]["method"]
         pipeline_results = (
-            construct_aggregate_sql_payload(self.pipelines, self.pql["aggregate"]["params"])
+            construct_aggregate_sql_payload(
+                self.pipelines, self.pql["aggregate"]["params"]
+            )
             if agg_method == "query.sql"
             else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]
         )

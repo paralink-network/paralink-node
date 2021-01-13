@@ -3,7 +3,7 @@ import typing
 import pandas as pd
 from pandasql import sqldf
 
-from src.pql.exceptions import UserQueryError, ParserNotFound, ParseDataError
+from src.pql.exceptions import ParseDataError, ParserNotFound, UserQueryError
 
 
 def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:

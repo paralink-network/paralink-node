@@ -63,8 +63,7 @@ class ArgumentError(Error):
 
 
 class ParserNotFound(Error):
-    """UserQueryError is triggered when user query fails.
-    """
+    """UserQueryError is triggered when user query fails."""
 
     def __init__(self, message: str):
         self.code = -32013
@@ -73,8 +72,7 @@ class ParserNotFound(Error):
 
 
 class ParseDataError(Error):
-    """ParseDataError is triggered when data can not be parsed.
-    """
+    """ParseDataError is triggered when data can not be parsed."""
 
     def __init__(self, message: str):
         self.code = -32014
@@ -83,8 +81,7 @@ class ParseDataError(Error):
 
 
 class UserQueryError(Error):
-    """UserQueryError is triggered when user query fails.
-    """
+    """UserQueryError is triggered when user query fails."""
 
     def __init__(self, message: str):
         self.code = -32015

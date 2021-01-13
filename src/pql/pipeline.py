@@ -1,12 +1,12 @@
 import typing
 from decimal import Decimal
 
-from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
+from src.config import config
+from src.pql.exceptions import MethodNotFound, NoInputValue, StepNotFound
+from src.pql.handlers.eth_handler import EthHandler
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
-from src.pql.handlers.eth_handler import EthHandler
 from src.pql.query_sql import execute_sql_query, to_df
-from src.config import config
 
 
 class Pipeline:
@@ -138,7 +138,7 @@ class Pipeline:
             )
 
     async def query_sql(self, step: dict, index: int) -> typing.Any:
-        """"Convert the data from the previous step in the pipeline to a pd.DataFrame
+        """ "Convert the data from the previous step in the pipeline to a pd.DataFrame
         and then execute the user defined sql query against it.
 
         Args:

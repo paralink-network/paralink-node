@@ -1,12 +1,11 @@
-from asyncio import get_event_loop
 import json
+from asyncio import get_event_loop
 
 from aiohttp import ClientSession
 
 
 async def main():
-    """Obtains Bitcoin price from a single API endpoint.
-    """
+    """Obtains Bitcoin price from a single API endpoint."""
     url = "http://127.0.0.1:7424"
 
     pql_bitcoin_price = {
