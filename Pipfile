@@ -37,6 +37,8 @@ web3 = "==5.11.1"
 celery = "*"
 stdiomask = "*"
 pre-commit = "*"
+pandas = "*"
+pandasql = "*"
 
 [requires]
 python_version = "3.8"

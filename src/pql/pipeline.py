@@ -1,11 +1,12 @@
 import typing
 from decimal import Decimal
 
-from src.config import config
-from src.pql.exceptions import MethodNotFound, NoInputValue, StepNotFound
-from src.pql.handlers.eth_handler import EthHandler
+from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
+from src.pql.handlers.eth_handler import EthHandler
+from src.pql.query_sql import execute_sql_query, to_df
+from src.config import config
 
 
 class Pipeline:
@@ -45,6 +46,8 @@ class Pipeline:
 
                 else:
                     raise StepNotFound(f"custom step \"{step['step']}\" not found")
+            elif step["step"] == "query.sql":
+                result = await self.query_sql(step, i)
             else:
                 raise StepNotFound(f"step \"{step['step']}\" not found")
 
@@ -133,6 +136,22 @@ class Pipeline:
             raise MethodNotFound(
                 f"handler for math step method \"{step['method']}\" not found."
             )
+
+    async def query_sql(self, step: dict, index: int) -> typing.Any:
+        """"Convert the data from the previous step in the pipeline to a pd.DataFrame
+        and then execute the user defined sql query against it.
+
+        Args:
+            step: step PQL json
+            index: index of the step
+
+        Returns:
+            typing.Any: return of the sql query processing.
+        """
+        df = to_df(self.get_value_for_step(index - 1), step["method"])
+        return await execute_sql_query(
+            {"response": df}, step["query"], step.get("result")
+        )
 
     def get_value_for_step(self, i: int) -> typing.Any:
         """get_value_for_step obtains the value from previous step if it exists.
