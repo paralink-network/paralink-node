@@ -74,6 +74,5 @@ jobs:
           pipenv install
 
       - name: Run pre-commit
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
           pipenv run pre-commit run --all-files
