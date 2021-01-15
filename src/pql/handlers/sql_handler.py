@@ -4,8 +4,8 @@ import typing
 import aiohttp
 import asyncpg
 
-from src.pql.handlers.handler import Handler
 from src.pql.exceptions import MethodNotFound
+from src.pql.handlers.handler import Handler
 
 
 class SqlHandler(Handler):
@@ -32,4 +32,3 @@ class SqlHandler(Handler):
             return values
         else:
             raise MethodNotFound(f'handler for SQL method "{method}" not found.')
-

@@ -107,3 +107,10 @@ You can run tests with:
 pipenv run pytest
 ```
 
+## Pre-commit hooks
+
+We use pre-commit hooks to enforce coding standards. To install pre-commit hooks:
+
+```
+pre-commit install
+```

@@ -2,6 +2,7 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
+
 from aioresponses import aioresponses
 
 
@@ -24,7 +25,10 @@ def pql():
                         "method": "json",
                         "params": ["bitcoin", "usd"],
                     },
-                    {"step": "custom.my_add", "params": 10000,},
+                    {
+                        "step": "custom.my_add",
+                        "params": 10000,
+                    },
                 ],
             }
         ],

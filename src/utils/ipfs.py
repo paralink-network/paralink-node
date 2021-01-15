@@ -1,5 +1,6 @@
-import base58
 import binascii
+
+import base58
 
 
 def ipfs_to_bytes32(hash_str: str):

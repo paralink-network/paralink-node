@@ -1,13 +1,12 @@
 """Add ContractOracle model
 
 Revision ID: 8bf91192e068
-Revises: 
+Revises:
 Create Date: 2020-12-30 13:58:11.924401
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "8bf91192e068"

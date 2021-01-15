@@ -1,5 +1,5 @@
-from asyncio import get_event_loop
 import json
+from asyncio import get_event_loop
 
 from aiohttp import ClientSession
 

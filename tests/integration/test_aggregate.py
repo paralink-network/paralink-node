@@ -1,6 +1,7 @@
 import json
 
 import pytest
+
 from aioresponses import aioresponses
 
 
@@ -33,7 +34,10 @@ def pql_json():
                         "method": "http.get",
                         "uri": "https://api-pub.bitfinex.com/v2/ticker/tBTCUSD",
                     },
-                    {"step": "get_index", "params": 6,},
+                    {
+                        "step": "get_index",
+                        "params": 6,
+                    },
                 ],
             },
             {
@@ -137,4 +141,3 @@ async def test_mean(client, pql_json, mock_responses, method, expected_value):
     res = await res.json()
 
     assert res["result"] == expected_value
-

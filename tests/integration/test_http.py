@@ -47,7 +47,8 @@ async def test_http_get(client):
 async def test_http_post(client):
     with aioresponses(passthrough=["http://127.0.0.1:"]) as m:
         m.post(
-            "https://api-pub.bitfinex.com/v2/calc/fx", payload=[22695],
+            "https://api-pub.bitfinex.com/v2/calc/fx",
+            payload=[22695],
         )
         post_pql = {
             "name": "POST HTTP",
@@ -62,7 +63,10 @@ async def test_http_post(client):
                             "uri": "https://api-pub.bitfinex.com/v2/calc/fx",
                             "params": {"ccy1": "BTC", "ccy2": "USD"},
                         },
-                        {"step": "get_index", "params": 0,},
+                        {
+                            "step": "get_index",
+                            "params": 0,
+                        },
                     ],
                 },
             ],
@@ -78,4 +82,3 @@ async def test_http_post(client):
         res = await res.json()
 
         assert res == {"jsonrpc": "2.0", "result": "22695", "id": 1}
-

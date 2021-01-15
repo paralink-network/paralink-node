@@ -1,8 +1,8 @@
 from docopt import docopt
-from src.config import __version__
 
-import src.cli.node
 import src.cli.accounts
+import src.cli.node
+from src.config import __version__
 from src.logging import setup_logging
 
 __doc__ = """

@@ -1,17 +1,16 @@
-from decimal import Decimal
 import typing
+from decimal import Decimal
 
-from src.pql.exceptions import StepNotFound, MethodNotFound, NoInputValue
+from src.config import config
+from src.pql.exceptions import MethodNotFound, NoInputValue, StepNotFound
+from src.pql.handlers.eth_handler import EthHandler
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
-from src.pql.handlers.eth_handler import EthHandler
 from src.pql.query_sql import execute_sql_query, to_df
-from src.config import config
 
 
 class Pipeline:
-    """Pipeline holds the information about the specific PQL pipeline as well as the executed results.
-    """
+    """Pipeline holds the information about the specific PQL pipeline as well as the executed results."""
 
     def __init__(self, pipeline: dict):
         """Initialize Pipeline object.
@@ -20,7 +19,7 @@ class Pipeline:
             pipeline (dict): pipeline PQL json.
         """
         self.pipeline = pipeline
-        self.step_results = []
+        self.step_results: typing.List[typing.Any] = []
 
     async def execute(self) -> None:
         """Execute `self.pipeline` step by step.
@@ -139,7 +138,7 @@ class Pipeline:
             )
 
     async def query_sql(self, step: dict, index: int) -> typing.Any:
-        """"Convert the data from the previous step in the pipeline to a pd.DataFrame
+        """ "Convert the data from the previous step in the pipeline to a pd.DataFrame
         and then execute the user defined sql query against it.
 
         Args:
@@ -168,6 +167,8 @@ class Pipeline:
 
         """
         if i < 0:
-            raise NoInputValue(f"Step with index {i} has no input value.",)
+            raise NoInputValue(
+                f"Step with index {i} has no input value.",
+            )
         else:
             return self.step_results[i]

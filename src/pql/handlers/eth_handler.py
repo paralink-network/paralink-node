@@ -3,14 +3,12 @@ import typing
 
 import aiohttp
 import asyncpg
-
 from sanic.log import logger
-
 
 from src.config import config
 from src.network.web3 import w3
+from src.pql.exceptions import ArgumentError, ExternalError, MethodNotFound
 from src.pql.handlers.handler import Handler
-from src.pql.exceptions import MethodNotFound, ExternalError, ArgumentError
 
 
 class EthHandler(Handler):
