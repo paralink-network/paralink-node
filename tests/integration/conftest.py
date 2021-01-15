@@ -5,7 +5,9 @@ from src import create_app
 
 @pytest.fixture(scope="session")
 def app():
-    args = {"ENABLE_BACKGROUND_WORKER": False}
+    args = {
+        "ENABLE_BACKGROUND_WORKER": False,
+    }
     app = create_app(args)
     yield app
 
