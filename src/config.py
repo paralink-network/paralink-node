@@ -24,6 +24,9 @@ class Config:
     CELERY_BROKER_URL = getenv("CELERY_BROKER_URL")
     DATABASE_URL = getenv("DATABASE_URL")
 
+    # Whether to start a background worker that will collect events from chains
+    ENABLE_BACKGROUND_WORKER = getenv("ENABLE_BACKGROUND_WORKER", "True") == "True"
+
     # Default number of confirmations for ETH finality
     DEFAULT_NUM_CONFIRMATIONS = 40
 

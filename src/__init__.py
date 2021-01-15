@@ -20,6 +20,7 @@ from src.process.collector import start_collecting
 def create_app(args={}) -> Sanic:  # noqa: C901
     app = Sanic("src")
     app.config.from_object(config)
+    app.update_config(args)
 
     jsonrpc = SanicJsonrpc(app, post_route="/rpc", ws_route="/ws")
 
@@ -29,7 +30,8 @@ def create_app(args={}) -> Sanic:  # noqa: C901
     jinja = SanicJinja2(app)
     session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
 
-    asyncio.get_event_loop().run_until_complete(start_collecting())
+    if app.config["ENABLE_BACKGROUND_WORKER"]:
+        asyncio.get_event_loop().run_until_complete(start_collecting())
 
     @jsonrpc
     async def execute_pql(pql_json: str) -> str:
