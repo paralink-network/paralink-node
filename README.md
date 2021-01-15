@@ -112,5 +112,5 @@ pipenv run pytest
 We use pre-commit hooks to enforce coding standards. To install pre-commit hooks:
 
 ```
-pre-commit install
+pipenv run pre-commit install
 ```

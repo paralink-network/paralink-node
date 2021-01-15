@@ -39,6 +39,7 @@ stdiomask = "*"
 pre-commit = "*"
 pandas = "*"
 pandasql = "*"
+pydocstyle = "*"
 
 [requires]
 python_version = "3.8"
