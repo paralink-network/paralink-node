@@ -1,6 +1,6 @@
 ![](https://paralink.network/images/logo-sm-home.png)
 
-# Overview ![test](https://github.com/paralink-network/paralink-node/workflows/.github/workflows/main.yml/badge.svg)
+# Overview ![paralink-node CI](https://github.com/paralink-network/paralink-node/workflows/paralink-node%20CI/badge.svg)
 
 Paralink Node is responsible for executing ETL pipelines and PQL queries. The results are relayed to
 all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
