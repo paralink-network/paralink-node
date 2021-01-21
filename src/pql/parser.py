@@ -3,10 +3,12 @@ import typing
 from decimal import Decimal
 
 import numpy as np
+from jsonschema import ValidationError, validate
 
-from src.pql.exceptions import MethodNotFound
+from src.pql.exceptions import MethodNotFound, PqlValidationError
 from src.pql.pipeline import Pipeline
 from src.pql.query_sql import construct_aggregate_sql_payload, execute_sql_query
+from src.pql.schema import pql as pql_schema
 
 
 class Parser:
@@ -20,8 +22,26 @@ class Parser:
         Args:
             pql (dict): a valid PQL dict object
         """
-        self.pql = pql
+        self.pql = self.validate_pql(pql)
         self.pipelines: typing.List[Pipeline] = []
+
+    @staticmethod
+    def validate_pql(pql: dict) -> dict:
+        """
+
+        Args:
+            pql (dict): the PQL dict to be validated
+
+        Returns:
+            dict: validated pql dict that conforms to schema
+        """
+        try:
+            validate(pql, pql_schema)
+            return pql
+        except ValidationError as e:
+            raise PqlValidationError(
+                f"PQL validation failed on {e.parent.instance if e.parent else e.instance}"
+            )
 
     async def execute(self) -> typing.Any:
         """Executes given PQL dict object.

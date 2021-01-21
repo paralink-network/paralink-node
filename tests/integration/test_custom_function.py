@@ -1,5 +1,5 @@
+import importlib
 import json
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -25,10 +25,7 @@ def pql():
                         "method": "json",
                         "params": ["bitcoin", "usd"],
                     },
-                    {
-                        "step": "custom.my_add",
-                        "params": 10000,
-                    },
+                    {"step": "custom.my_add", "params": 10000},
                 ],
             }
         ],
@@ -54,8 +51,8 @@ async def test_custom_function_not_found(client, pql):
         assert res == {
             "jsonrpc": "2.0",
             "error": {
-                "code": -32010,
-                "message": 'custom step "custom.my_add" not found',
+                "code": -32015,
+                "message": "PQL validation failed on {'step': 'custom.my_add', 'params': 10000}",
             },
             "id": 1,
         }
@@ -78,6 +75,13 @@ async def test_custom_function(client, mocker, pql):
         mocker.patch.dict(
             "src.pql.pipeline.config.PQL_CUSTOM_METHODS", PQL_CUSTOM_METHODS
         )
+
+        CUSTOM_SCHEMA = {
+            "type": "object",
+            "properties": {"step": {"const": "custom.my_add"}},
+            "required": ["step"],
+        }
+        mocker.patch.dict("src.pql.schema.step_custom", CUSTOM_SCHEMA)
 
         request = {
             "jsonrpc": "2.0",

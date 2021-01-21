@@ -13,12 +13,12 @@ step_extract_http = {
 step_extract_sql = {
     "type": "object",
     "properties": {
-        "step": {"const", "extract"},
+        "step": {"const": "extract"},
         "method": {"const": "sql.postgres"},
         "uri": {"type": "string"},
         "query": {"type": "string"},
     },
-    "required": ["step", "method", "uir", "query"],
+    "required": ["step", "method", "uri", "query"],
 }
 
 step_extract_eth = {
@@ -57,4 +57,96 @@ step_extract_eth = {
         },
         "required": ["params"],
     },
+}
+
+step_traverse = {
+    "type": "object",
+    "properties": {
+        "method": {"const": "json"},
+        "params": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["method", "params"],
+}
+
+step_get_index = {
+    "type": "object",
+    "properties": {"step": {"const": "get_index"}, "params": {"type": "integer"}},
+    "required": ["step", "params"],
+}
+
+step_math = {
+    "type": "object",
+    "properties": {
+        "step": {"const": "math"},
+        "method": {"enum": ["mul", "add", "sub", "div"]},
+        "params": {"type": "number"},
+        "direction": {"const": {"reverse"}},
+    },
+    "required": ["step", "method", "params"],
+}
+
+step_custom = {
+    "type": "object",
+    "properties": {"step": {"enum": []}},
+    "required": ["step"],
+}
+
+step_query_sql = {
+    "type": "object",
+    "properties": {
+        "step": {"const": "query.sql"},
+        "method": {"enum": ["json", "list", None]},
+        "query": {"type": "string"},
+        "result": {"type": "boolean"},
+    },
+    "required": ["step", "query", "method"],
+}
+
+source = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "pipeline": {
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    step_extract_http,
+                    step_extract_sql,
+                    step_extract_eth,
+                    step_traverse,
+                    step_get_index,
+                    step_math,
+                    step_custom,
+                    step_query_sql,
+                ]
+            },
+        },
+    },
+    "required": ["name", "pipeline"],
+}
+
+aggregate = {
+    "type": "object",
+    "properties": {"method": {"enum": ["mean", "median", "max", "min", "query.sql"]}},
+    "required": ["method"],
+    "if": {"properties": {"method": {"const": "query.sql"}}},
+    "then": {
+        "properties": {
+            "params": {"type": "array", "items": {"enum": ["json", "list", None]}},
+            "query": {"type": "string"},
+            "result": {"const": True},
+        },
+        "required": ["params", "query", "result"],
+    },
+}
+
+pql = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "psql_version": {"type": "string"},
+        "sources": {"type": "array", "items": source},
+        "aggregate": aggregate,
+    },
+    "required": ["name", "psql_version", "sources"],
 }

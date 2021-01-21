@@ -1,6 +1,5 @@
-from typing import Any
-
 from fashionable.unset import UNSET
+from jsonschema import ValidationError
 from sanic_jsonrpc.errors import Error
 
 
@@ -82,6 +81,15 @@ class ParseDataError(Error):
 
 class UserQueryError(Error):
     """UserQueryError is triggered when user query fails."""
+
+    def __init__(self, message: str):
+        self.code = -32015
+        self.message = message
+        self.data = UNSET
+
+
+class PqlValidationError(Error):
+    """PqlValidationError is triggered when the Pql fails validation"""
 
     def __init__(self, message: str):
         self.code = -32015
