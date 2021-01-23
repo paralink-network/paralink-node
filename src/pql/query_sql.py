@@ -19,7 +19,7 @@ def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:
     try:
         if parser == "json":
             return pd.json_normalize(data)
-        elif parser == "list":
+        if parser == "list":
             return pd.DataFrame([data])
         if parser is None:
             return data

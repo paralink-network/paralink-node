@@ -59,3 +59,12 @@ class PqlValidationError(Error):
         self.code = -32006
         self.message = message
         self.data = UNSET
+
+
+class PqlCustomMethodNotImplementedError(Error):
+    """CustomMethodNotImplementedError is trigger when the execute method is not implemented for a custom method"""
+
+    def __init__(self, message: str):
+        self.code = -32007
+        self.message = message
+        self.data = UNSET

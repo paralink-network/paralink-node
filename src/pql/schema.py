@@ -99,9 +99,7 @@ step_query_sql = {
     "required": ["step", "query", "method"],
 }
 
-custom_steps = [
-    custom_function.SCHEMA for custom_function in PQL_CUSTOM_METHODS.values()
-]
+custom_steps = [custom_method.SCHEMA for custom_method in PQL_CUSTOM_METHODS.values()]
 
 source = {
     "type": "object",
