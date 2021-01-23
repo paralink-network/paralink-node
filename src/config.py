@@ -5,6 +5,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from src.pql.custom_methods import MyAdd
+from src.pql.sklearn import Sklearn
+
 __version__ = "0.1.0"
 
 # Load the main configuration file
@@ -45,6 +48,9 @@ class Config:
 
     TEMPLATE_PQL_DEFINITION = json.load(open("src/data/oracle_abi.json"))
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
+
+    # User defined custom methods
+    PQL_CUSTOM_METHODS = {MyAdd.PQL_IDENTIFIER: MyAdd, Sklearn.PQL_IDENTIFIER: Sklearn}
 
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)

@@ -1,7 +1,7 @@
 import typing
 from decimal import Decimal
 
-from src.pql.custom_methods import PQL_CUSTOM_METHODS
+from src.config import config
 from src.pql.exceptions import NoInputValue
 from src.pql.handlers.eth_handler import EthHandler
 from src.pql.handlers.rest_api_handler import RestApiHandler
@@ -39,7 +39,7 @@ class Pipeline:
             elif step["step"] == "math":
                 result = await self.math(step, i)
             elif step["step"].startswith("custom"):
-                result = PQL_CUSTOM_METHODS[step["step"]].execute(step, i, self)
+                result = config.PQL_CUSTOM_METHODS[step["step"]].execute(step, i, self)
             elif step["step"] == "query.sql":
                 result = await self.query_sql(step, i)
 

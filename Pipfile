@@ -41,6 +41,7 @@ pandas = "*"
 pandasql = "*"
 pydocstyle = "*"
 jsonschema = "*"
+sklearn-json = "*"
 
 [requires]
 python_version = "3.8"

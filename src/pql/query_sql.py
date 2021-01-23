@@ -21,6 +21,8 @@ def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:
             return pd.json_normalize(data)
         if parser == "list":
             return pd.DataFrame([data])
+        if parser == "dict":
+            return pd.DataFrame.from_dict(data)
         if parser is None:
             return data
     except Exception:

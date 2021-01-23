@@ -30,7 +30,3 @@ class MyAdd(CustomMethod):
     @classmethod
     def execute(cls, step: dict, index: int, pipeline) -> typing.Union[float, int]:
         return pipeline.get_value_for_step(index - 1) + step["params"]
-
-
-# User defined custom methods
-PQL_CUSTOM_METHODS = {MyAdd.PQL_IDENTIFIER: MyAdd}
