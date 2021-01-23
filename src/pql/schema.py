@@ -1,3 +1,5 @@
+from src.pql.custom_methods import PQL_CUSTOM_METHODS
+
 step_extract_http = {
     "type": "object",
     "properties": {
@@ -40,7 +42,8 @@ step_extract_eth = {
                 },
                 "required": ["block"],
             }
-        }
+        },
+        "required": ["params"],
     },
     "else": {
         "properties": {
@@ -85,12 +88,6 @@ step_math = {
     "required": ["step", "method", "params"],
 }
 
-step_custom = {
-    "type": "object",
-    "properties": {"step": {"enum": []}},
-    "required": ["step"],
-}
-
 step_query_sql = {
     "type": "object",
     "properties": {
@@ -101,6 +98,10 @@ step_query_sql = {
     },
     "required": ["step", "query", "method"],
 }
+
+custom_steps = [
+    custom_function.SCHEMA for custom_function in PQL_CUSTOM_METHODS.values()
+]
 
 source = {
     "type": "object",
@@ -116,9 +117,9 @@ source = {
                     step_traverse,
                     step_get_index,
                     step_math,
-                    step_custom,
                     step_query_sql,
                 ]
+                + custom_steps
             },
         },
     },

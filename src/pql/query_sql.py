@@ -3,7 +3,7 @@ import typing
 import pandas as pd
 from pandasql import sqldf
 
-from src.pql.exceptions import ParseDataError, ParserNotFound, UserQueryError
+from src.pql.exceptions import ParseDataError, UserQueryError
 
 
 def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:
@@ -19,14 +19,10 @@ def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:
     try:
         if parser == "json":
             return pd.json_normalize(data)
-        if parser == "list":
+        elif parser == "list":
             return pd.DataFrame([data])
         if parser is None:
             return data
-        else:
-            raise ParserNotFound(f"parser not found - {parser}")
-    except ParserNotFound:
-        raise
     except Exception:
         raise ParseDataError(f"failed to parse data {data} using parser {parser}")
 

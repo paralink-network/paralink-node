@@ -14,8 +14,13 @@ def bad_step() -> dict:
     }
 
 
+@pytest.fixture()
+def second_bad_step() -> dict:
+    return {"second": "bad", "test": "value"}
+
+
 @pytest.fixture
-def pql(bad_step: dict):
+def pql(bad_step: dict, second_bad_step: dict):
     return {
         "name": "Custom function",
         "psql_version": "0.1",
@@ -29,13 +34,14 @@ def pql(bad_step: dict):
                         "uri": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
                     },
                     bad_step,
+                    second_bad_step,
                 ],
             }
         ],
     }
 
 
-async def test_pql_schema(client, pql, bad_step):
+async def test_pql_schema(client, pql, bad_step, second_bad_step):
     with aioresponses(passthrough=["http://127.0.0.1:"]) as m:
         m.get(
             "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
@@ -54,8 +60,13 @@ async def test_pql_schema(client, pql, bad_step):
         assert res == {
             "jsonrpc": "2.0",
             "error": {
-                "code": -32015,
-                "message": f"PQL validation failed on {bad_step}",
+                "code": -32006,
+                "message": "\n".join(
+                    [
+                        f"{step} is not valid under any of the given schemas"
+                        for step in [bad_step, second_bad_step]
+                    ]
+                ),
             },
             "id": 1,
         }

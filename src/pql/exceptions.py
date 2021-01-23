@@ -29,43 +29,7 @@ class NoInputValue(Error):
     """
 
     def __init__(self, message: str):
-        self.code = -32009
-        self.message = message
-        self.data = UNSET
-
-
-class StepNotFound(Error):
-    """StepNotFound is triggered when step is not found."""
-
-    def __init__(self, message: str):
-        self.code = -32010
-        self.message = message
-        self.data = UNSET
-
-
-class MethodNotFound(Error):
-    """MethodNotFound is triggered when pipeline method is not found."""
-
-    def __init__(self, message: str):
-        self.code = -32011
-        self.message = message
-        self.data = UNSET
-
-
-class ArgumentError(Error):
-    """ArgumentError is triggered when PQL arguments are incorrect."""
-
-    def __init__(self, message: str):
-        self.code = -32012
-        self.message = message
-        self.data = UNSET
-
-
-class ParserNotFound(Error):
-    """UserQueryError is triggered when user query fails."""
-
-    def __init__(self, message: str):
-        self.code = -32013
+        self.code = -32003
         self.message = message
         self.data = UNSET
 
@@ -74,7 +38,7 @@ class ParseDataError(Error):
     """ParseDataError is triggered when data can not be parsed."""
 
     def __init__(self, message: str):
-        self.code = -32014
+        self.code = -32004
         self.message = message
         self.data = UNSET
 
@@ -83,7 +47,7 @@ class UserQueryError(Error):
     """UserQueryError is triggered when user query fails."""
 
     def __init__(self, message: str):
-        self.code = -32015
+        self.code = -32005
         self.message = message
         self.data = UNSET
 
@@ -92,6 +56,6 @@ class PqlValidationError(Error):
     """PqlValidationError is triggered when the Pql fails validation"""
 
     def __init__(self, message: str):
-        self.code = -32015
+        self.code = -32006
         self.message = message
         self.data = UNSET

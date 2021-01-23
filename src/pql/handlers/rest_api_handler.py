@@ -3,7 +3,6 @@ import typing
 
 import aiohttp
 
-from src.pql.exceptions import MethodNotFound
 from src.pql.handlers.handler import Handler
 
 
@@ -33,5 +32,3 @@ class RestApiHandler(Handler):
                 async with session.post(step["uri"], json=step["params"]) as resp:
                     data = await resp.read()
                     return json.loads(data)
-        else:
-            raise MethodNotFound(f'handler for HTTP method "{method}" not found.')
