@@ -60,11 +60,11 @@ class Config:
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
 
     # User defined custom methods
-    PQL_CUSTOM_METHODS_SPECS = [
+    PQL_CUSTOM_METHODS_IMPORTS = [
         "src.pql.custom_methods.my_add:MyAdd",
         "src.pql.custom_methods.sklearn:Sklearn",
     ]
-    PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_SPECS)
+    PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_IMPORTS)
 
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)
