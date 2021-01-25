@@ -46,11 +46,6 @@ class Config:
     TEMPLATE_PQL_DEFINITION = json.load(open("src/data/oracle_abi.json"))
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
 
-    # User defined custom functions
-    PQL_CUSTOM_METHODS: typing.Dict[str, typing.Callable] = {
-        # "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(index - 1) + step["params"]
-    }
-
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)
 

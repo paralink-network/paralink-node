@@ -1,13 +1,22 @@
 import json
-from unittest.mock import MagicMock
 
 import pytest
 
 from aioresponses import aioresponses
 
 
+@pytest.fixture()
+def custom_step() -> dict:
+    return {"step": "custom.my_add", "params": 10000}
+
+
 @pytest.fixture
-def pql():
+def bad_custom_step() -> dict:
+    return {"step": "i_dont_exist", "params": 1000}
+
+
+@pytest.fixture
+def pql(custom_step: dict):
     return {
         "name": "Custom function",
         "psql_version": "0.1",
@@ -25,17 +34,40 @@ def pql():
                         "method": "json",
                         "params": ["bitcoin", "usd"],
                     },
-                    {
-                        "step": "custom.my_add",
-                        "params": 10000,
-                    },
+                    custom_step,
                 ],
             }
         ],
     }
 
 
-async def test_custom_function_not_found(client, pql):
+@pytest.fixture
+def bad_custom_step_pql(bad_custom_step: dict):
+    return {
+        "name": "Custom function",
+        "psql_version": "0.1",
+        "sources": [
+            {
+                "name": "Bitcoin price CoinGecko",
+                "pipeline": [
+                    {
+                        "step": "extract",
+                        "method": "http.get",
+                        "uri": "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+                    },
+                    {
+                        "step": "traverse",
+                        "method": "json",
+                        "params": ["bitcoin", "usd"],
+                    },
+                    bad_custom_step,
+                ],
+            }
+        ],
+    }
+
+
+async def test_custom_function_not_found(client, bad_custom_step_pql, bad_custom_step):
     with aioresponses(passthrough=["http://127.0.0.1:"]) as m:
         m.get(
             "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
@@ -45,7 +77,7 @@ async def test_custom_function_not_found(client, pql):
         request = {
             "jsonrpc": "2.0",
             "method": "execute_pql",
-            "params": json.dumps(pql),
+            "params": json.dumps(bad_custom_step_pql),
             "id": 1,
         }
         res = await client.post("/rpc", json=request)
@@ -54,8 +86,8 @@ async def test_custom_function_not_found(client, pql):
         assert res == {
             "jsonrpc": "2.0",
             "error": {
-                "code": -32010,
-                "message": 'custom step "custom.my_add" not found',
+                "code": -32006,
+                "message": f"{bad_custom_step} is not valid under any of the given schemas",
             },
             "id": 1,
         }
@@ -66,17 +98,6 @@ async def test_custom_function(client, mocker, pql):
         m.get(
             "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
             payload={"bitcoin": {"usd": 25000}},
-        )
-
-        PQL_CUSTOM_METHODS = {
-            "my_add": lambda step, index, pipeline: pipeline.get_value_for_step(
-                index - 1
-            )
-            + step["params"]
-        }
-
-        mocker.patch.dict(
-            "src.pql.pipeline.config.PQL_CUSTOM_METHODS", PQL_CUSTOM_METHODS
         )
 
         request = {

@@ -2,12 +2,11 @@ import json
 import typing
 
 import aiohttp
-import asyncpg
 from sanic.log import logger
 
 from src.config import config
 from src.network.web3 import w3
-from src.pql.exceptions import ArgumentError, ExternalError, MethodNotFound
+from src.pql.exceptions import ExternalError
 from src.pql.handlers.handler import Handler
 
 
@@ -26,23 +25,20 @@ class EthHandler(Handler):
             )
 
         if method == "balance":
-            EthHandler.require_params(step, ["address"])
+            # set params
+            params = step["params"]
+            num_confirmations = (
+                config.DEFAULT_NUM_CONFIRMATIONS
+                if "num_confirmations" not in params
+                else params["num_confirmations"]
+            )
+            block = (
+                w3.eth.blockNumber - num_confirmations
+                if params["block"] == "latest"
+                else params["block"]
+            )
 
-            if "params" in step:
-                EthHandler.require_params(step["params"], ["block"])
-
-                params = step["params"]
-                num_confirmations = (
-                    config.DEFAULT_NUM_CONFIRMATIONS
-                    if "num_confirmations" not in params
-                    else params["num_confirmations"]
-                )
-
-                block = (
-                    w3.eth.blockNumber - num_confirmations
-                    if params["block"] == "latest"
-                    else params["block"]
-                )
+            # execute getBalance
             try:
                 logger.info(
                     f"Obtaining balance for address {step['address']} (block: {block} | orig: {params['block']}), "
@@ -53,9 +49,6 @@ class EthHandler(Handler):
                 raise ExternalError(f"{str(type(e))}: {e.args[0]}")
 
         elif method == "function":
-            EthHandler.require_params(step, ["address", "params"])
-            EthHandler.require_params(step["params"], ["function", "args"])
-
             # Parse params
             params = step["params"]
             args = params["args"]
@@ -88,8 +81,6 @@ class EthHandler(Handler):
                 return fun(*args).call(block_identifier=block)
             except Exception as e:
                 raise ExternalError(f"{str(type(e))}: {e.args[0]}")
-        else:
-            raise MethodNotFound(f'handler for SQL method "{method}" not found.')
 
     @staticmethod
     async def fetch_from_explorer(address: str, action: str) -> typing.Dict:

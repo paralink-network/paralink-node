@@ -3,10 +3,12 @@ import typing
 from decimal import Decimal
 
 import numpy as np
+from jsonschema import Draft7Validator, ValidationError
 
-from src.pql.exceptions import MethodNotFound
+from src.pql.exceptions import PqlValidationError
 from src.pql.pipeline import Pipeline
 from src.pql.query_sql import construct_aggregate_sql_payload, execute_sql_query
+from src.pql.schema import pql as pql_schema
 
 
 class Parser:
@@ -20,8 +22,23 @@ class Parser:
         Args:
             pql (dict): a valid PQL dict object
         """
-        self.pql = pql
+        self.pql = self.validate_pql(pql)
         self.pipelines: typing.List[Pipeline] = []
+
+    @staticmethod
+    def validate_pql(pql: dict) -> dict:
+        """
+
+        Args:
+            pql (dict): the PQL dict to be validated
+
+        Returns:
+            dict: validated pql dict that conforms to schema
+        """
+        errors = [error for error in Draft7Validator(pql_schema).iter_errors(pql)]
+        if errors:
+            raise PqlValidationError("\n".join([error.message for error in errors]))
+        return pql
 
     async def execute(self) -> typing.Any:
         """Executes given PQL dict object.
@@ -67,10 +84,6 @@ class Parser:
                 pipeline_results,
                 self.pql["aggregate"]["query"],
                 self.pql["aggregate"]["result"],
-            )
-        else:
-            raise MethodNotFound(
-                f'aggregate method "{agg_method}" not found.',
             )
 
 
