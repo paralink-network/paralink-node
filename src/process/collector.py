@@ -86,8 +86,7 @@ def listen_for_substrate_events(
                 logger.info(
                     f"Found event {event} | {decoded_event}, block_nr {finalised_block_nr}, "
                 )
-                # TODO: add delay
-                handle_substrate_request_event(
+                handle_substrate_request_event.delay(
                     substrate_chain,
                     decoded_event,
                     {"params": event.params},

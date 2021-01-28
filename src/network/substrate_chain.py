@@ -1,12 +1,12 @@
 import logging
 
-from substrateinterface import SubstrateInterface, Keypair
+from scalecodec.base import ScaleBytes
+from substrateinterface import Keypair, SubstrateInterface
 from substrateinterface.contracts import (
     ContractEvent,
-    ContractMetadata,
     ContractInstance,
+    ContractMetadata,
 )
-from scalecodec.base import ScaleBytes
 
 from src.network.chain import Chain
 
@@ -53,7 +53,7 @@ class SubstrateChain(Chain):
 
     def check_valid_contracts(self, substrate: SubstrateInterface = None) -> None:
         """Iterates over `self.tracked_contracts` and checks whether the contract is
-        deployed. """
+        deployed."""
         if not substrate:
             substrate = self.get_connection()
 
@@ -183,4 +183,3 @@ class SubstrateChain(Chain):
         logger.info(
             f"[{self.name}] Reading the value from contract after the callback {result}",
         )
-
