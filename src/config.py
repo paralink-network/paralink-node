@@ -1,4 +1,5 @@
 import json
+import shutil
 import typing
 from os import getenv
 from pathlib import Path
@@ -43,11 +44,20 @@ class Config:
     # Only used if above is True
     ETHEREUM_KEYSTORE_PASSWORD = getenv("ETHEREUM_KEYSTORE_PASSWORD", "paralink")
 
-    TEMPLATE_PQL_DEFINITION = json.load(open("src/data/oracle_abi.json"))
+    TEMPLATE_PQL_DEFINITION = json.load(
+        open("src/data/default_pql_template_definition.json")
+    )
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
 
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)
+
+        # Create default chain config if it doesn't exist
+        chain_config = Path(self.DATA_FOLDER).joinpath("chain_config.json")
+        if not chain_config.exists():
+            chains_json = json.load(open("src/data/default_chain_config.json", "r"))
+            chains_json[0]["url"] = self.WEB3_PROVIDER_URI
+            json.dump(chains_json, open(chain_config.absolute(), "w"))
 
 
 config = Config()
