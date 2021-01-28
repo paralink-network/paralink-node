@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+#substrate-interface = {editable = true, path = "./py-substrate-interface"}
 
 [packages]
 jsonrpcserver = "*"
@@ -41,6 +42,7 @@ pandas = "*"
 pandasql = "*"
 pydocstyle = "*"
 jsonschema = "*"
+substrate-interface = "==0.11.10"
 
 [requires]
 python_version = "3.8"
