@@ -6,7 +6,9 @@ Paralink Node is responsible for executing ETL pipelines and PQL queries. The re
 all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
 
 ## Configure
-Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables.
+Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables. 
+
+Paralink node uses local configuration stored in `~/.paralink`. On the first run a default chain config will be created (`~/.paralink/chain_config.json`). Modify it to 
 
 ### Database
 
@@ -26,7 +28,52 @@ IPFS_PATH=~/.ipfs ipfs daemon &
 
 ### Ethereum chain
 
-For processing events on Ethereum, a node is required. It can be specified in `.env` file through `WEB3_PROVIDER_URI` variable. For Infura node provide the whole address.
+For processing events on Ethereum, a node is required. It can be specified in `.env` file through `WEB3_PROVIDER_URI` variable on the very first rune. For Infura node provide the whole address. Afterwards you can change your chain config in `~/.paralink/chain_config.json` file. Additional EVM chains can be added:
+
+```json
+{
+	"name": "plasm-local",
+	"type": "evm",
+	"project": "plasm",
+	"url":  "ws://localhost:8545",
+	"credentials": {"private_key": "<PRIVATE_KEY>"},
+	"tracked_contracts": [<list of contract addresses to listen for events>],
+	"oracle_metadata": "<path_to_oracle_abi> | optional"
+}
+```
+
+### Substrate chain
+
+For processing events on a Substrate parachain add an entry to chain config in `~/.paralink/chain_config.json` file:
+
+
+```
+{
+	"name": "dev-canvas",
+	"type": "substrate",
+	"project": "canvas",
+	"url": "ws://127.0.0.1:9944",
+	"credentials":{
+			"private_key": "<PRIVATE_KEY>",
+			"public_key": "<PUBLIC_KEY, different than SS58 ADDRESS>"
+	},
+	"tracked_contracts": [<list of contract addresses to listen for events>],
+	"metadata_file": "<path to ink! oracle metadata.json | optional"
+}
+```
+
+
+Note that only Substrate events are currently supported. Soliditiy events from the EVM pallet are not supported at the moment as the event polling API is not implemented yet on the `parity/frontier` project.
+
+The following version of Substrate node was tested:
+
+```
+docker run --detach --rm -p 9933:9933 -p 9944:9944 -p 9615:9615 \
+					 -v substrate-dev:/substrate parity/substrate:2.0.0-533bbbd --dev --tmp \
+					 --unsafe-ws-external --rpc-cors=all --unsafe-rpc-external --rpc-methods=Unsafe \
+					 --prometheus-external
+```
+
 
 ## Run step by step
 
@@ -79,14 +126,6 @@ docker run -it -p 7424:7424 paralink-node ./paralink-node node start --host 0.0.
 ## Web UI
 
 A Web UI is accessible on [localhost:7424](http://localhost:7424). It lists all your local IPFS files as well as allows you to create your own PQL definitions, test them and save them to IPFS.
-
-### Account management
-
-Private keys can be imported with the following command.
-
-```
-./paralink-node accounts import <private_key>
-```
 
 ## Docs
 

@@ -1,0 +1,1353 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "0x5be0abd108fd9a72baca87c148e751c0cb77a7393a5843d2e550e5f702afd759",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.49.0-nightly"
+  },
+  "contract": {
+    "name": "trusted_oracle",
+    "version": "0.1.0",
+    "authors": [
+      "Paralink Network"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [
+          {
+            "name": "admin",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "min_valid_period",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "name": "max_valid_period",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Init"
+        ],
+        "name": [
+          "new"
+        ],
+        "selector": "0xd183512b"
+      },
+      {
+        "args": [],
+        "docs": [
+          " In default case the admin is also the user and the oracle"
+        ],
+        "name": [
+          "default"
+        ],
+        "selector": "0x6a3712e2"
+      }
+    ],
+    "docs": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "from",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "docs": [
+              " PQL ETL Definition",
+              " Skip first 2 bytes (hash fn, size) so that we can fit into bytes32"
+            ],
+            "indexed": false,
+            "name": "pql_hash",
+            "type": {
+              "displayName": [
+                "Hash"
+              ],
+              "type": 17
+            }
+          },
+          {
+            "docs": [
+              " Block number for request expiry"
+            ],
+            "indexed": false,
+            "name": "valid_till",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "name": "Request"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "refunded",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [],
+        "name": "RequestInvalidated"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "oracle",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [],
+        "name": "OracleSet"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [],
+        "name": "UserAdded"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [],
+        "name": "UserRemoved"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "oracle",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "amount",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [],
+        "name": "RewardsClaimed"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "old_fee",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 14
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "new_fee",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [],
+        "name": "FeeChanged"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "name": "result",
+            "type": {
+              "displayName": [
+                "OracleResult"
+              ],
+              "type": 20
+            }
+          }
+        ],
+        "docs": [],
+        "name": "CallbackComplete"
+      }
+    ],
+    "messages": [
+      {
+        "args": [
+          {
+            "name": "pql_hash",
+            "type": {
+              "displayName": [
+                "Hash"
+              ],
+              "type": 17
+            }
+          },
+          {
+            "name": "valid_period",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Make a PQL request"
+        ],
+        "mutates": true,
+        "name": [
+          "request"
+        ],
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 18
+        },
+        "selector": "0xb16b00b5"
+      },
+      {
+        "args": [
+          {
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "name": "callback_addr",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "result",
+            "type": {
+              "displayName": [
+                "OracleResult"
+              ],
+              "type": 20
+            }
+          }
+        ],
+        "docs": [
+          " Deliver the oracle result"
+        ],
+        "mutates": true,
+        "name": [
+          "callback"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0xfa79c4e6"
+      },
+      {
+        "args": [
+          {
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "name": "callback_addr",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "result",
+            "type": {
+              "displayName": [
+                "OracleResult"
+              ],
+              "type": 20
+            }
+          }
+        ],
+        "docs": [
+          " Simpler callback that sets the variable in the contract."
+        ],
+        "mutates": true,
+        "name": [
+          "simple_callback"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x0906df68"
+      },
+      {
+        "args": [
+          {
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "oracle_results"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "i64"
+          ],
+          "type": 16
+        },
+        "selector": "0x69345883"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "get_fee"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u128"
+          ],
+          "type": 14
+        },
+        "selector": "0xf4c7a6d0"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Distribute the rewards to the oracle."
+        ],
+        "mutates": true,
+        "name": [
+          "claim_rewards"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x7b153013"
+      },
+      {
+        "args": [
+          {
+            "name": "new_oracle",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [
+          " Distribute the rewards to the oracle."
+        ],
+        "mutates": true,
+        "name": [
+          "set_oracle"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x57cbce4c"
+      },
+      {
+        "args": [
+          {
+            "name": "new_fee",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [
+          " Change the per-request fee."
+        ],
+        "mutates": true,
+        "name": [
+          "set_fee"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x7e5d84eb"
+      },
+      {
+        "args": [
+          {
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [
+          " Add user to the oracle contract"
+        ],
+        "mutates": true,
+        "name": [
+          "add_user"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x05b89bb0"
+      },
+      {
+        "args": [
+          {
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [
+          " Remove user from the oracle contract"
+        ],
+        "mutates": true,
+        "name": [
+          "remove_user"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x7b323d59"
+      },
+      {
+        "args": [
+          {
+            "name": "request_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [
+          " Remove expired request to free contract storage"
+        ],
+        "mutates": true,
+        "name": [
+          "clear_expired"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 21
+        },
+        "selector": "0x58d7003b"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "ty": 1
+            }
+          },
+          "name": "admin"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                              "ty": 4
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 5
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                          "ty": 8
+                        }
+                      },
+                      "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "authorized_users"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+              "ty": 1
+            }
+          },
+          "name": "authorized_oracle"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
+                              "ty": 4
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
+                                      "ty": 5
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                                          "ty": 10
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0600000001000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
+                          "ty": 12
+                        }
+                      },
+                      "offset": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "requests"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
+              "ty": 11
+            }
+          },
+          "name": "request_idx"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
+              "ty": 14
+            }
+          },
+          "name": "fee"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "min_valid_period"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0900000002000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "max_valid_period"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0a00000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 4
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0b00000002000000000000000000000000000000000000000000000000000000",
+                                      "ty": 5
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0b00000003000000000000000000000000000000000000000000000000000000",
+                                          "ty": 10
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0c00000002000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0c00000003000000000000000000000000000000000000000000000000000000",
+                          "ty": 15
+                        }
+                      },
+                      "offset": "0x0b00000003000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "oracle_results"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "type": 2
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_env",
+        "types",
+        "AccountId"
+      ]
+    },
+    {
+      "def": {
+        "array": {
+          "len": 32,
+          "type": 3
+        }
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "last_vacant",
+              "type": 5
+            },
+            {
+              "name": "len",
+              "type": 5
+            },
+            {
+              "name": "len_entries",
+              "type": 5
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Header"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u32"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 7
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 1
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        1
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "next",
+              "type": 5
+            },
+            {
+              "name": "prev",
+              "type": 5
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "VacantEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 9
+            },
+            {
+              "name": "key_index",
+              "type": 5
+            }
+          ]
+        }
+      },
+      "params": [
+        9
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "tuple": []
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 7
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 11
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        11
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u64"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 13
+            },
+            {
+              "name": "key_index",
+              "type": 5
+            }
+          ]
+        }
+      },
+      "params": [
+        13
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "tuple": [
+          1,
+          11,
+          14
+        ]
+      }
+    },
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 16
+            },
+            {
+              "name": "key_index",
+              "type": 5
+            }
+          ]
+        }
+      },
+      "params": [
+        16
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "i64"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "type": 2
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_env",
+        "types",
+        "Hash"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 11
+                }
+              ],
+              "name": "Ok"
+            },
+            {
+              "fields": [
+                {
+                  "type": 19
+                }
+              ],
+              "name": "Err"
+            }
+          ]
+        }
+      },
+      "params": [
+        11,
+        19
+      ],
+      "path": [
+        "Result"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "Unauthorized"
+            },
+            {
+              "discriminant": 1,
+              "name": "RequestExpired"
+            },
+            {
+              "discriminant": 2,
+              "name": "RequestNotExpired"
+            },
+            {
+              "discriminant": 3,
+              "name": "RequestNotFound"
+            },
+            {
+              "discriminant": 4,
+              "name": "TransferFailed"
+            },
+            {
+              "discriminant": 5,
+              "name": "InsufficientFunds"
+            },
+            {
+              "discriminant": 6,
+              "name": "BelowSubsistenceThreshold"
+            },
+            {
+              "discriminant": 7,
+              "name": "PaymentRequired"
+            },
+            {
+              "discriminant": 8,
+              "name": "CallbackExecutionFailed"
+            },
+            {
+              "discriminant": 9,
+              "name": "ValueError"
+            }
+          ]
+        }
+      },
+      "path": [
+        "trusted_oracle",
+        "trusted_oracle",
+        "Error"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 16
+                }
+              ],
+              "name": "Numeric"
+            },
+            {
+              "fields": [
+                {
+                  "type": 2
+                }
+              ],
+              "name": "RawBytes"
+            }
+          ]
+        }
+      },
+      "path": [
+        "trusted_oracle",
+        "trusted_oracle",
+        "OracleResult"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 9
+                }
+              ],
+              "name": "Ok"
+            },
+            {
+              "fields": [
+                {
+                  "type": 19
+                }
+              ],
+              "name": "Err"
+            }
+          ]
+        }
+      },
+      "params": [
+        9,
+        19
+      ],
+      "path": [
+        "Result"
+      ]
+    }
+  ]
+}

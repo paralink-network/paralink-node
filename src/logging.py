@@ -5,6 +5,7 @@ from src.config import config
 
 
 def setup_logging():
+    """Initializes logging."""
     logging_format = (
         "%(asctime)s [%(process)d] [%(levelname)s] "
         "%(module)s::%(funcName)s():l%(lineno)d: "

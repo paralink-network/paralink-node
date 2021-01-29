@@ -1,6 +1,5 @@
 from docopt import docopt
 
-import src.cli.accounts
 import src.cli.node
 from src.config import __version__
 from src.logging import setup_logging
@@ -13,7 +12,6 @@ Usage: paralink-node [--version] <command> [<args>...] [options <args>]
 
 Commands:
    node       node actions, such as start.
-   accounts   manage accounts.
 
 options:
    -h, --help       display this message.
@@ -30,8 +28,6 @@ def main():
 
     if args["<command>"] == "node":
         src.cli.node.main()
-    elif args["<command>"] == "accounts":
-        src.cli.accounts.main()
 
 
 if __name__ == "__main__":
