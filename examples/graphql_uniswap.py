@@ -10,20 +10,17 @@ the_graph_uniswap_query = """{
     totalVolumeUSD
   }
   tokens(first: 5) {
-    id
-    symbol
-    name
-    decimals
+    tradeVolumeUSD
   }
 }
 """
 
 
 async def main():
-    """Obtains Bitcoin price from 3 different API endpoints and averages the result."""
+    """Obtains a sum of the tradeVolumeUSD for the first 5 tokens on uniswap"""
     url = "http://127.0.0.1:7424"
 
-    pql_bitcoin_price = {
+    the_graph_uniswap_trade_volume = {
         "name": "GraphQL POST HTTP",
         "psql_version": "0.1",
         "sources": [
@@ -44,7 +41,7 @@ async def main():
                     {
                         "step": "query.sql",
                         "method": ["json", "json"],
-                        "query": "SELECT sum(decimals) FROM tokens",
+                        "query": "SELECT sum(tradeVolumeUSD) FROM tokens",
                         "result": True,
                     },
                 ],
@@ -56,7 +53,7 @@ async def main():
     request = {
         "jsonrpc": "2.0",
         "method": "execute_pql",
-        "params": json.dumps(pql_bitcoin_price),
+        "params": json.dumps(the_graph_uniswap_trade_volume),
         "id": 1,
     }
 
