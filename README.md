@@ -77,7 +77,7 @@ docker run --detach --rm -p 9933:9933 -p 9944:9944 -p 9615:9615 \
 
 ## Run step by step
 
-To run a celery background worker to collect and process on-chain events, an instance of rabbitmq is required:
+To run a background worker to collect on-chain events, an instance of rabbitmq is required:
 
 ```
 docker run -d -p 5672:5672 rabbitmq
