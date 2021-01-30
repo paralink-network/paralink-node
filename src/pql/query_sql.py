@@ -6,25 +6,33 @@ from pandasql import sqldf
 from src.pql.exceptions import ParseDataError, UserQueryError
 
 
-def to_df(data: typing.Any, parser: typing.Optional[str]) -> pd.DataFrame:
+def prepare_data(
+    data: typing.Any, parser: typing.Union[str, list, None] = None
+) -> dict:
     """Convert data to pd.DataFrame.
 
     Args:
         data (typing.Any): The data to convert to pd.DataFrame.
-        parser (str): The parser required to convert data to pd.DataFrame.
+        parser (Union[str, list]): The parser(s) required to convert data to pd.DataFrame.
 
     Returns:
         pd.DataFrame: the data in pd.DataFrame format
     """
+    methods = {
+        "json": lambda x: pd.json_normalize(x),
+        "list": lambda x: pd.DataFrame([x]),
+        "dict": lambda x: pd.DataFrame.from_dict(x),
+        None: lambda x: x,
+    }
+
     try:
-        if parser == "json":
-            return pd.json_normalize(data)
-        if parser == "list":
-            return pd.DataFrame([data])
-        if parser == "dict":
-            return pd.DataFrame.from_dict(data)
-        if parser is None:
-            return data
+        if isinstance(parser, list):
+            return {
+                key: methods[parser[i]](value)
+                for i, (key, value) in enumerate(data.items())
+            }
+        else:
+            return {"data": methods[parser](data)}
     except Exception:
         raise ParseDataError(f"failed to parse data {data} using parser {parser}")
 
@@ -49,22 +57,3 @@ async def execute_sql_query(
             return sqldf(query, request_data)
     except Exception:
         raise UserQueryError(f"failed to run query: {query[:100]}...")
-
-
-def construct_aggregate_sql_payload(pipelines: list, parsers: list) -> dict:
-    """parses pipeline results into a pd.DataFrame and formats appropriately for
-    downstream processing.
-
-    Args:
-        pipelines (list): list of pipelines as associated with PQL query
-        parsers (list): list of parsers required to convert pipeline results to
-        pd.DataFrame
-
-    Returns:
-        dict: returns an appropriately structured dictionary containing pipeline
-        results as pd.DataFrame for downstream processing
-    """
-    return {
-        f"result_{i}": to_df(pipeline.step_results[-1], parsers[i])
-        for i, pipeline in enumerate(pipelines)
-    }

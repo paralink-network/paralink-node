@@ -88,11 +88,12 @@ step_math = {
     "required": ["step", "method", "params"],
 }
 
+query_methods = {"enum": ["json", "list", "dict", None]}
 step_query_sql = {
     "type": "object",
     "properties": {
         "step": {"const": "query.sql"},
-        "method": {"enum": ["json", "list", None]},
+        "method": {"oneOf": [query_methods, {"type": "array", "items": query_methods}]},
         "query": {"type": "string"},
         "result": {"type": "boolean"},
     },

@@ -5,9 +5,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.pql.custom_methods.my_add import MyAdd
-from src.pql.custom_methods.sklearn import Sklearn
-
 __version__ = "0.1.0"
 
 # Load the main configuration file
@@ -62,7 +59,6 @@ class Config:
     # User defined custom methods
     PQL_CUSTOM_METHODS_IMPORTS = [
         "src.pql.custom_methods.my_add:MyAdd",
-        "src.pql.custom_methods.sklearn:Sklearn",
     ]
     PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_IMPORTS)
 
