@@ -5,7 +5,7 @@ import aiohttp
 from sanic.log import logger
 
 from src.config import config
-from src.network.web3 import w3
+from src.network import chains
 from src.pql.exceptions import ExternalError
 from src.pql.handlers.handler import Handler
 
@@ -19,10 +19,10 @@ class EthHandler(Handler):
     async def execute(step: dict) -> typing.Any:
         method = step["method"].split(".")[-1]
 
+        w3 = chains.evm["eth-mainnet"].get_connection()
+
         if not w3.isConnected():
-            raise ExternalError(
-                "Could not connect to Ethereum node, check WEB3_PROVIDER_URI in .env file."
-            )
+            raise ExternalError("Could not connect to Ethereum node.")
 
         if method == "balance":
             # set params

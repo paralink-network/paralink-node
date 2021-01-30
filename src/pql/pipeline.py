@@ -120,7 +120,7 @@ class Pipeline:
         )
 
     async def query_sql(self, step: dict, index: int) -> typing.Any:
-        """ "Convert the data from the previous step in the pipeline to a pd.DataFrame
+        """Convert the data from the previous step in the pipeline to a pd.DataFrame
         and then execute the user defined sql query against it.
 
         Args:

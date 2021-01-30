@@ -5,8 +5,9 @@ import ipfshttpclient
 from celery.utils.log import get_task_logger
 
 from src.config import config
-from src.network import accounts
-from src.network.web3 import w3
+from src.network import chains
+from src.network.evm_chain import EvmChain
+from src.network.substrate_chain import SubstrateChain
 from src.pql.parser import parse_and_execute
 from src.utils.ipfs import bytes32_to_ipfs
 
@@ -16,11 +17,15 @@ logger = get_task_logger(__name__)
 
 
 @processor.task(bind=True)
-def handle_request_event(self, event) -> None:
-    """handle_request_event receives a Request Solidity event, executes it and
+def handle_evm_request_event(self, evm_chain: EvmChain, event: dict) -> None:
+    """Handle Solidity Request function.
+
+
+    handle_request_event receives a Request Solidity event, executes it and
     writes back to location specified by the callback field.
 
     Args:
+        evm_chain: EvmChain to write the response to
         event: Solidity Request event
     """
     args = event["args"]
@@ -32,46 +37,70 @@ def handle_request_event(self, event) -> None:
         ipfs = ipfshttpclient.connect(config.IPFS_API_SERVER_ADDRESS)
         req = ipfs.get_json(ipfs_hash, timeout=3)
 
-        logger.debug(f"Obtained PQL definition {req}")
+        logger.debug(f"[{evm_chain.name}] Obtained PQL definition {req}.")
 
         res = asyncio.run(parse_and_execute(req))
-        logger.info(f"Obtained result {res}")
+        logger.info(f"[{evm_chain.name}] Obtained result {res}.")
 
-        write_to_eth_chain(event, res)
+        evm_chain.fulfill(event, res)
     except Exception as e:
         if datetime.now() < expiration:
             self.retry(exc=e)
         else:
             logger.info(
-                f"Request {args['requestId']} from {args['requester']} expired due to {str(type(e))}: {e.args[0]}"
+                f"Request {args['requestId']} from {args['requester']} expired due to {str(type(e))}: {e.args[0]}."
             )
             return
 
 
-def write_to_eth_chain(event, res):
-    """It writes `res` (result of the PQL definition) to the location specified in the `Request` event.
+@processor.task(bind=True)
+def handle_substrate_request_event(
+    self,
+    substrate_chain: SubstrateChain,
+    decoded_event: dict,
+    params: dict,
+) -> None:
+    """Handle Substrate Request function.
+
+    handle_substrate_request_event receives a Request ink! event, executes it and
+    writes back to location specified by the callback field.
 
     Args:
-        event: a Request event from ETH chain.
-        res: already executed PQL definition
+        self: this celery task
+        substrate_chain (SubstrateChain): SubstrateChain to write the response to
+        decoded_event (dict): decoded SCALE Request event
+        params (dict): params of the Request event not provided by the
+                       decoded_event, such as external data.
     """
-    logger.info(f"Writing {res} to ETH chain")
+    substrate = substrate_chain.get_connection()
 
-    args = event["args"]
-    contract = w3.eth.contract(abi=config.ORACLE_CONTRACT_ABI, address=event["address"])
+    contract_address = substrate.ss58_encode(params["params"][0]["value"])
+    contract = substrate_chain.create_contract_from_address(contract_address)
 
-    tx = contract.functions.fulfillRequest(
-        args["requestId"],
-        args["callbackAddress"],
-        args["callbackFunctionId"],
-        args["expiration"],
-        w3.toBytes(int(res)).rjust(32, b"\0"),
-    ).buildTransaction()
+    # Parse args
+    args = {arg["name"]: arg["value"] for arg in decoded_event["args"]}
+    ipfs_hash = bytes32_to_ipfs(bytes.fromhex(args["pql_hash"][2:]))
 
-    tx.update({"nonce": w3.eth.getTransactionCount(accounts.ethkey.address)})
+    # Execute IPFS response
+    try:
+        ipfs = ipfshttpclient.connect(config.IPFS_API_SERVER_ADDRESS)
+        req = ipfs.get_json(ipfs_hash, timeout=3)
 
-    signed_tx = w3.eth.account.signTransaction(tx, accounts.ethkey.privateKey)
-    tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+        logger.debug(f"[{substrate_chain.name}] Obtained PQL definition {req}.")
 
-    logger.info(tx_receipt)
+        res = asyncio.run(parse_and_execute(req))
+        logger.info(f"[{substrate_chain.name}] Obtained result {res}.")
+
+        substrate_chain.fulfill(contract, args, res)
+    except Exception as e:
+        finalised_block_nr = substrate.get_block_number(
+            substrate.get_chain_finalised_head()
+        )
+
+        if finalised_block_nr < args["valid_till"]:
+            self.retry(exc=e)
+        else:
+            logger.error(
+                f"[{substrate_chain.name}] Request {args['request_id']} from {args['from']} expired due to {str(type(e))}: {e.args[0]}"
+            )
+            return

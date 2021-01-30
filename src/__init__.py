@@ -12,6 +12,7 @@ from sanic_session import InMemorySessionInterface
 
 from src.config import config
 from src.models import db
+from src.network import chains
 from src.pql.exceptions import PqlDecodingError
 from src.pql.parser import parse_and_execute
 
@@ -32,7 +33,7 @@ def create_app(args={}) -> Sanic:  # noqa: C901
     if app.config["ENABLE_BACKGROUND_WORKER"]:
         from src.process.collector import start_collecting
 
-        asyncio.get_event_loop().run_until_complete(start_collecting())
+        asyncio.get_event_loop().run_until_complete(start_collecting(chains))
 
     @jsonrpc
     async def execute_pql(pql_json: str) -> str:
