@@ -27,7 +27,7 @@ class Parser:
 
     @staticmethod
     def validate_pql(pql: dict) -> dict:
-        """
+        """Method to validate the PQL dict adheres to the PQL schema.
 
         Args:
             pql (dict): the PQL dict to be validated

@@ -17,7 +17,7 @@ the_graph_uniswap_query = """{
 
 
 async def main():
-    """Obtains a sum of the tradeVolumeUSD for the first 5 tokens on uniswap"""
+    """Obtains a sum of the tradeVolumeUSD for the first 5 tokens on uniswap."""
     url = "http://127.0.0.1:7424"
 
     the_graph_uniswap_trade_volume = {

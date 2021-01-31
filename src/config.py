@@ -12,6 +12,17 @@ load_dotenv(".env")
 
 
 def parse_and_import_custom_methods(import_specs: list) -> dict:
+    """Helper function to parse specified custom methods and import the classes from the required modules.
+
+    Args:
+        import_specs (list): a list of custom methods.  Each string element in the list
+        corresponds to a custom method and is specified using the pattern module:class.
+
+    Returns:
+        A dict with the custom method PQL identifier as the key and the custom method
+        class as the value.
+
+    """
     return {
         custom_method.PQL_IDENTIFIER: custom_method
         for custom_method in [

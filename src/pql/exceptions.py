@@ -53,7 +53,7 @@ class UserQueryError(Error):
 
 
 class PqlValidationError(Error):
-    """PqlValidationError is triggered when the Pql fails validation"""
+    """PqlValidationError is triggered when the Pql fails validation."""
 
     def __init__(self, message: str):
         self.code = -32006
@@ -62,7 +62,7 @@ class PqlValidationError(Error):
 
 
 class PqlCustomMethodNotImplementedError(Error):
-    """CustomMethodNotImplementedError is trigger when the execute method is not implemented for a custom method"""
+    """CustomMethodNotImplementedError is trigger when the execute method is not implemented for a custom method."""
 
     def __init__(self, message: str):
         self.code = -32007
