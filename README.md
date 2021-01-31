@@ -79,7 +79,7 @@ docker run --detach --rm -p 9933:9933 -p 9944:9944 -p 9615:9615 \
 
 If you want to run a background worker to collect on-chain events, see [Event processing](#event-processing).
 
-Alternatively you can disable the background worker by setting the following environment variable to false in the .env file:
+Alternatively you can disable the background worker by setting the following environment variable to false in the [.env](.env.template) file:
 
 ```
 ENABLE_BACKGROUND_WORKER="False"
