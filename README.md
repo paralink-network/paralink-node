@@ -77,11 +77,7 @@ docker run --detach --rm -p 9933:9933 -p 9944:9944 -p 9615:9615 \
 
 ## Run step by step
 
-To run a background worker to collect on-chain events, an instance of rabbitmq is required:
-
-```
-docker run -d -p 5672:5672 rabbitmq
-```
+If you want to run a background worker to collect on-chain events, see [Event processing](#event-processing).
 
 Alternatively you can disable the background worker by setting the following environment variable to false in the .env file:
 
