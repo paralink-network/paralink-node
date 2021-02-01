@@ -1,4 +1,4 @@
-from src.pql.custom_methods import PQL_CUSTOM_METHODS
+from src.config import config
 
 step_extract_http = {
     "type": "object",
@@ -88,18 +88,21 @@ step_math = {
     "required": ["step", "method", "params"],
 }
 
+query_methods = {"enum": ["json", "list", "dict", None]}
 step_query_sql = {
     "type": "object",
     "properties": {
         "step": {"const": "query.sql"},
-        "method": {"enum": ["json", "list", None]},
+        "method": {"oneOf": [query_methods, {"type": "array", "items": query_methods}]},
         "query": {"type": "string"},
         "result": {"type": "boolean"},
     },
     "required": ["step", "query", "method"],
 }
 
-custom_steps = [custom_method.SCHEMA for custom_method in PQL_CUSTOM_METHODS.values()]
+custom_steps = [
+    custom_method.SCHEMA for custom_method in config.PQL_CUSTOM_METHODS.values()
+]
 
 source = {
     "type": "object",

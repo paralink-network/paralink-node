@@ -1,6 +1,5 @@
 import json
-import shutil
-import typing
+from importlib import import_module
 from os import getenv
 from pathlib import Path
 
@@ -10,6 +9,27 @@ __version__ = "0.1.0"
 
 # Load the main configuration file
 load_dotenv(".env")
+
+
+def parse_and_import_custom_methods(import_specs: list) -> dict:
+    """Helper function to parse specified custom methods and import the classes from the required modules.
+
+    Args:
+        import_specs (list): a list of custom methods.  Each string element in the list
+        corresponds to a custom method and is specified using the pattern module:class.
+
+    Returns:
+        A dict with the custom method PQL identifier as the key and the custom method
+        class as the value.
+
+    """
+    return {
+        custom_method.PQL_IDENTIFIER: custom_method
+        for custom_method in [
+            getattr(import_module(import_spec[0]), import_spec[1])
+            for import_spec in [import_spec.split(":") for import_spec in import_specs]
+        ]
+    }
 
 
 class Config:
@@ -48,6 +68,12 @@ class Config:
         open("src/data/default_pql_template_definition.json")
     )
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
+
+    # User defined custom methods
+    PQL_CUSTOM_METHODS_IMPORTS = [
+        "src.pql.custom_methods.my_add:MyAdd",
+    ]
+    PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_IMPORTS)
 
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)

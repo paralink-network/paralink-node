@@ -7,7 +7,7 @@ from jsonschema import Draft7Validator, ValidationError
 
 from src.pql.exceptions import PqlValidationError
 from src.pql.pipeline import Pipeline
-from src.pql.query_sql import construct_aggregate_sql_payload, execute_sql_query
+from src.pql.query_sql import execute_sql_query, prepare_data
 from src.pql.schema import pql as pql_schema
 
 
@@ -27,7 +27,7 @@ class Parser:
 
     @staticmethod
     def validate_pql(pql: dict) -> dict:
-        """
+        """Method to validate the PQL dict adheres to the PQL schema.
 
         Args:
             pql (dict): the PQL dict to be validated
@@ -65,8 +65,12 @@ class Parser:
         """Aggregates pipelines results depending on the `method`."""
         agg_method = self.pql["aggregate"]["method"]
         pipeline_results = (
-            construct_aggregate_sql_payload(
-                self.pipelines, self.pql["aggregate"]["params"]
+            prepare_data(
+                {
+                    f"pipeline_{i}": x.step_results[-1]
+                    for i, x in enumerate(self.pipelines)
+                },
+                self.pql["aggregate"]["params"],
             )
             if agg_method == "query.sql"
             else [Decimal(pipeline.step_results[-1]) for pipeline in self.pipelines]

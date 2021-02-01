@@ -25,7 +25,7 @@ async def test_user_query(client):
                         {
                             "step": "query.sql",
                             "method": "json",
-                            "query": "SELECT `bitcoin.usd` FROM response",
+                            "query": "SELECT `bitcoin.usd` FROM data",
                             "result": True,
                         },
                     ],

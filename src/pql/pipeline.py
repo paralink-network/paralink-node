@@ -1,12 +1,14 @@
 import typing
 from decimal import Decimal
 
-from src.pql.custom_methods import PQL_CUSTOM_METHODS
+import pandas as pd
+
+from src.config import config
 from src.pql.exceptions import NoInputValue
 from src.pql.handlers.eth_handler import EthHandler
 from src.pql.handlers.rest_api_handler import RestApiHandler
 from src.pql.handlers.sql_handler import SqlHandler
-from src.pql.query_sql import execute_sql_query, to_df
+from src.pql.query_sql import execute_sql_query, prepare_data
 
 
 class Pipeline:
@@ -39,7 +41,7 @@ class Pipeline:
             elif step["step"] == "math":
                 result = await self.math(step, i)
             elif step["step"].startswith("custom"):
-                result = PQL_CUSTOM_METHODS[step["step"]].execute(step, i, self)
+                result = config.PQL_CUSTOM_METHODS[step["step"]].execute(step, i, self)
             elif step["step"] == "query.sql":
                 result = await self.query_sql(step, i)
 
@@ -128,10 +130,8 @@ class Pipeline:
         Returns:
             typing.Any: return of the sql query processing.
         """
-        df = to_df(self.get_value_for_step(index - 1), step["method"])
-        return await execute_sql_query(
-            {"response": df}, step["query"], step.get("result")
-        )
+        data = prepare_data(self.get_value_for_step(index - 1), step["method"])
+        return await execute_sql_query(data, step["query"], step.get("result"))
 
     def get_value_for_step(self, i: int) -> typing.Any:
         """get_value_for_step obtains the value from previous step if it exists.
