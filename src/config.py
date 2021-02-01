@@ -3,6 +3,7 @@ from importlib import import_module
 from os import getenv
 from pathlib import Path
 
+import yaml
 from dotenv import load_dotenv
 
 __version__ = "0.1.0"
@@ -70,10 +71,8 @@ class Config:
     ORACLE_CONTRACT_ABI = json.load(open("src/data/oracle_abi.json"))
 
     # User defined custom methods
-    PQL_CUSTOM_METHODS_IMPORTS = [
-        "src.pql.custom_methods.my_add:MyAdd",
-    ]
-    PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_IMPORTS)
+    PQL_PLUGINS = yaml.safe_load(open("plugins.yaml"))
+    PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_PLUGINS["plugins"])
 
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)
