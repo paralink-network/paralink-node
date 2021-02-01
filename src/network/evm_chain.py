@@ -1,3 +1,4 @@
+import json
 import logging
 import typing
 
@@ -5,23 +6,48 @@ from web3 import Web3
 
 from src.config import config
 from src.network.chain import Chain
+from src.network.exceptions import ChainReferenceDataNotFound
 
 logger = logging.getLogger(__name__)
+chain_reference_data = json.load(open("src/data/chains.json"))
+
+
+def fetch_chain_data(chain_id: int) -> dict:
+    """A function to fetch chain reference data.
+
+    Args:
+        chain_id (int): chain ID.
+
+    Returns:
+        reference data associated with chain_id and network_id.
+
+    Raises:
+        ChainReferenceDataNotFound: if reference data is not found.
+    """
+    chain = [x for x in chain_reference_data if x["chainId"] == chain_id]
+    if len(chain) < 1:
+        raise ChainReferenceDataNotFound(
+            f"Reference data not found for chain_id: {chain}"
+        )
+    return chain[0]
 
 
 class EvmChain(Chain):
     def __init__(
         self,
-        name,
+        chain_id,
         url="ws://localhost:8545",
         credentials={},
         active=True,
         tracked_contracts=[],
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
     ):
-        super().__init__(name, url, credentials, active, tracked_contracts)
-
+        self.chain_id = chain_id
+        self.chain_data = fetch_chain_data(chain_id)
         self.oracle_metadata = oracle_metadata
+        super().__init__(
+            self.chain_data["name"], url, credentials, active, tracked_contracts
+        )
 
     def get_connection(self) -> Web3:
         """ Return Web3 connection to the chain specified by `url`"""

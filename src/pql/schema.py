@@ -29,8 +29,9 @@ step_extract_eth = {
         "step": {"const": "extract"},
         "method": {"enum": ["eth.balance", "eth.function"]},
         "address": {"type": "string"},
+        "chain_id": {"type": "integer"},
     },
-    "required": ["step", "method", "address"],
+    "required": ["step", "method", "address", "chain_id"],
     "if": {"properties": {"method": {"const": "eth.balance"}}},
     "then": {
         "properties": {

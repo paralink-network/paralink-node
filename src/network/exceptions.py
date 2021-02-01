@@ -1,0 +1,2 @@
+class ChainReferenceDataNotFound(Exception):
+    pass
