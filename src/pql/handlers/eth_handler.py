@@ -19,7 +19,7 @@ class EthHandler(Handler):
     async def execute(step: dict) -> typing.Any:
         method = step["method"].split(".")[-1]
 
-        w3 = chains.evm["eth-mainnet"].get_connection()
+        w3 = chains.evm[step["chain"]].get_connection()
 
         if not w3.isConnected():
             raise ExternalError("Could not connect to Ethereum node.")

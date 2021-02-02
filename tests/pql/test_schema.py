@@ -41,7 +41,7 @@ def test_schema_step_extract_eth_function() -> None:
         "step": "extract",
         "method": "eth.function",
         "address": "0xBb2b8038a1640196FbE3e38816F3e67Cba72D940",
-        "chain_id": 1,
+        "chain": "eth.mainnet",
         "params": {
             "function": "balanceOf(address)",
             "args": ["0x9b89202Fc32c294Df4B2b52830fF40B3EC0F0369"],
@@ -56,7 +56,7 @@ def test_schema_step_extract_eth_function_no_block() -> None:
         "step": "extract",
         "method": "eth.function",
         "address": "0xBb2b8038a1640196FbE3e38816F3e67Cba72D940",
-        "chain_id": 1,
+        "chain": "eth.mainnet",
         "params": {
             "function": "balanceOf(address)",
             "args": ["0x9b89202Fc32c294Df4B2b52830fF40B3EC0F0369"],
@@ -71,8 +71,8 @@ def test_schema_step_extract_eth_balance() -> None:
         "step": "extract",
         "method": "eth.balance",
         "address": "0x9b89202Fc32c294Df4B2b52830fF40B3EC0F0369",
+        "chain": "eth.mainnet",
         "params": {"block": "latest", "num_confirmations": 30},
-        "chain_id": 1,
     }
     validate(instance, step_extract_eth)
 
