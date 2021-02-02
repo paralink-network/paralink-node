@@ -40,8 +40,8 @@ class Chains:
             substrate = {}
             for chain in chain_config:
                 if chain["type"] == "evm":
-                    evm[chain["chain_id"]] = EvmChain(
-                        chain_id=chain["chain_id"],
+                    evm[chain["name"]] = EvmChain(
+                        name=chain["name"],
                         url=chain["url"],
                         credentials=chain.get("credentials", {}),
                         tracked_contracts=chain.get("tracked_contracts", []),

@@ -12,6 +12,18 @@
     "infoURL": "https://ethereum.org"
   },
   {
+    "name": "Moonbase Alpha Testnet",
+    "chainId": 1287,
+    "shortName": "moon",
+    "chain": "MOON",
+    "network": "testnet",
+    "networkId": 1287,
+    "nativeCurrency": {"name": "DEV", "symbol": "DEV"},
+    "rpc": ["https://rpc.testnet.moonbeam.network", "wss://wss.testnet.moonbeam.network"],
+    "faucets": [],
+    "infoURL": "https://docs.moonbeam.network/networks/testnet/"
+  },
+  {
     "name": "Optimistic Ethereum",
     "chainId": 10,
     "shortName": "oeth",

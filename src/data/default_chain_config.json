@@ -1,6 +1,6 @@
 [
   {
-    "chain_id": 1,
+    "name": "eth.mainnet",
     "type": "evm",
     "project": "eth",
     "url":  "https://mainnet.infura.io/v3/<infura-project-id>",

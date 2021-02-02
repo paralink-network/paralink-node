@@ -6,17 +6,17 @@ from web3 import Web3
 
 from src.config import config
 from src.network.chain import Chain
-from src.network.exceptions import ChainReferenceDataNotFound
+from src.network.exceptions import ChainValidationFailed
 
 logger = logging.getLogger(__name__)
 chain_reference_data = json.load(open("src/data/chains.json"))
 
 
-def fetch_chain_data(chain_id: int) -> dict:
+def fetch_chain_data(name: str) -> dict:
     """A function to fetch chain reference data.
 
     Args:
-        chain_id (int): chain ID.
+        name (str): chain name.
 
     Returns:
         reference data associated with chain_id and network_id.
@@ -24,39 +24,47 @@ def fetch_chain_data(chain_id: int) -> dict:
     Raises:
         ChainReferenceDataNotFound: if reference data is not found.
     """
-    chain = [x for x in chain_reference_data if x["chainId"] == chain_id]
-    if len(chain) < 1:
-        raise ChainReferenceDataNotFound(
-            f"Reference data not found for chain_id: {chain}"
-        )
-    return chain[0]
+    short_name, network = name.split(".")
+    for chain in chain_reference_data:
+        if chain["shortName"] == short_name and chain["network"] == network:
+            return chain
+    return {}
 
 
 class EvmChain(Chain):
     def __init__(
         self,
-        chain_id,
+        name,
         url="ws://localhost:8545",
         credentials={},
         active=True,
         tracked_contracts=[],
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
     ):
-        self.chain_id = chain_id
-        self.chain_data = fetch_chain_data(chain_id)
+        self.chain_data = fetch_chain_data(name)
         self.oracle_metadata = oracle_metadata
-        super().__init__(
-            self.chain_data["name"], url, credentials, active, tracked_contracts
-        )
+        super().__init__(name, url, credentials, active, tracked_contracts)
 
     def get_connection(self) -> Web3:
-        """ Return Web3 connection to the chain specified by `url`"""
+        """Return Web3 connection to the chain specified by `url`."""
         if self.url.startswith("ws"):
-            return Web3(Web3.WebsocketProvider(self.url))
+            web3 = Web3(Web3.WebsocketProvider(self.url))
         elif self.url.startswith("http"):
-            return Web3(Web3.HTTPProvider(self.url))
+            web3 = Web3(Web3.HTTPProvider(self.url))
         else:
             raise ValueError("URL type not supported")
+
+        if self.chain_data and (
+            int(web3.net.version) != self.chain_data["networkId"]
+            or web3.eth.chainId != self.chain_data["chainId"]
+        ):
+            raise ChainValidationFailed(
+                f"Chain validation failed for {self.name} "
+                f"- Expected (chainId, networkId): ({self.chain_data['chainId'], self.chain_data['networkId']}) "
+                f"- Actual: ({web3.eth.chainId}, {web3.net.version})"
+            )
+
+        return web3
 
     def fulfill(self, event: dict, res: typing.Any) -> None:
         """It writes `res` (result of the PQL definition) to the location specified in the `Request` event.
