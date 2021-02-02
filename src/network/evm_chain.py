@@ -57,8 +57,8 @@ class EvmChain(Chain):
         ):
             raise ChainValidationFailed(
                 f"Chain validation failed for {self.name} "
-                f"- Expected (chainId, networkId): ({self.chain_data['chainId'], self.chain_data['networkId']}) "
-                f"- Actual: ({web3.eth.chainId}, {web3.net.version})"
+                f"- Expected (chainId, networkId): {self.chain_data['chainId'], self.chain_data['networkId']} "
+                f"- Actual: {web3.eth.chainId, web3.net.version}"
             )
 
         return web3
