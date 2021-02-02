@@ -20,9 +20,6 @@ def fetch_chain_data(name: str) -> dict:
 
     Returns:
         reference data associated with chain_id and network_id.
-
-    Raises:
-        ChainReferenceDataNotFound: if reference data is not found.
     """
     short_name, network = name.split(".")
     for chain in chain_reference_data:
