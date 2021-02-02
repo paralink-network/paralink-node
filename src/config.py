@@ -24,7 +24,6 @@ def parse_and_import_custom_methods(plugins_config_path: Path) -> dict:
         class as the value.
 
     """
-
     plugins_config = yaml.safe_load(open(str(plugins_config_path.absolute()), "r"))
     import_specs = [
         {"module": plugin.split(":")[0], "class": plugin.split(":")[1]}
