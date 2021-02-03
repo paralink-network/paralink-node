@@ -6,9 +6,15 @@ Paralink Node is responsible for executing ETL pipelines and PQL queries. The re
 all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
 
 ## Configure
+
+### Submodules
+Run `git submodule init` and `git submodule update` to update the submodules (alternatively clone with `git clone --recurse-submodules`).
+
+### `.env` variables
+
 Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables. 
 
-Paralink node uses local configuration stored in `~/.paralink`. On the first run a default chain config will be created (`~/.paralink/chain_config.json`). Modify it to 
+Paralink node uses local configuration stored in `~/.paralink`. On the first run a default chain config will be created (`~/.paralink/chain_config.json`). Modify it to include your own set of chains.
 
 ### Database
 
