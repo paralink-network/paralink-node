@@ -1,0 +1,2 @@
+plugins:
+  - src.pql.custom_methods.my_add:MyAdd
