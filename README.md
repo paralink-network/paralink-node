@@ -5,34 +5,47 @@
 Paralink Node is responsible for executing ETL pipelines and PQL queries. The results are relayed to
 all supported chains via callbacks. Paralink Node is also a dependency to the on-chain [runtime](https://github.com/paralink-network/paralink-substrate).
 
-## Configure
 
-### Submodules
-Run `git submodule init` and `git submodule update` to update the submodules (alternatively clone with `git clone --recurse-submodules`).
+## Quick start
 
-### `.env` variables
+Make sure you downloaded all of git submodules, either with `git clone --recurse-submodules` or if you already cloned the repo run:
+
+```
+git submodule init 
+git submodule update
+```
+
+Paralink node uses local configuration stored in `~/.paralink`. Create the directory with 
+
+```
+mkdir ~/.paralink
+```
+
+This is where all node data will be stored.
 
 Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables. 
 
-Paralink node uses local configuration stored in `~/.paralink`. On the first run a default chain config will be created (`~/.paralink/chain_config.json`). Modify it to include your own set of chains.
-
-### Database
-
-A PostgreSQL DB is required for node to function. Migrate the DB with:
+To run the node we recommend using `docker-compose`:
 
 ```
-pipenv run alembic upgrade head
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 ```
 
-### IPFS
+The node will be available at [localhost:7245](http://localhost:7425). The above command will deploy PostgreSQL, IPFS, RabbitMQ message broker, background Celery worker as well as `nginx` server serving `paralink-ui` React app.
 
-For executing PQL definition an IPFS daemon is required. You can start it with:
+In case you do not want to run the UI (e.g. developing frontend), use
 
 ```
-IPFS_PATH=~/.ipfs ipfs daemon &
+docker-compose up --build
 ```
 
-### Ethereum chain
+
+## Configuration
+
+### Chain configuration
+On the first run a default chain config will be created (`~/.paralink/chain_config.json`). Modify it to include your own set of chains. If you run a local chain node, do not forget to modify the `docker-compose.yml` file to either include the chain container or use `network: host` to use the local chain. 
+
+#### Ethereum chain
 
 For processing events on Ethereum, a node is required. It can be specified in `.env` file through `WEB3_PROVIDER_URI` variable on the very first rune. For Infura node provide the whole address. Afterwards you can change your chain config in `~/.paralink/chain_config.json` file. Additional EVM chains can be added:
 
@@ -48,7 +61,7 @@ For processing events on Ethereum, a node is required. It can be specified in `.
 }
 ```
 
-### Substrate chain
+#### Substrate chain
 
 For processing events on a Substrate parachain add an entry to chain config in `~/.paralink/chain_config.json` file:
 
@@ -69,7 +82,7 @@ For processing events on a Substrate parachain add an entry to chain config in `
 ```
 
 
-Note that only Substrate events are currently supported. Soliditiy events from the EVM pallet are not supported at the moment as the event polling API is not implemented yet on the `parity/frontier` project.
+Note that only Substrate events are currently supported. Solidity events from the EVM pallet are not supported at the moment as the event polling API is not implemented yet on the `parity/frontier` project.
 
 The following version of Substrate node was tested:
 
@@ -83,18 +96,71 @@ docker run --detach --rm -p 9933:9933 -p 9944:9944 -p 9615:9615 \
 
 ## Run step by step
 
-If you want to run a background worker to collect on-chain events, see [Event processing](#event-processing).
+In case you want to run the node without the container, there is a couple of dependencies to be installed. The node requires a running PostgreSQL, IPFS API service and a RabbitMQ message broker. The node will not start if any of them is missing.
 
-Alternatively you can disable the background worker by setting the following environment variable to false in the [.env](.env.template) file:
-
-```
-ENABLE_BACKGROUND_WORKER="False"
-```
-
-Running the node is a multistage process:
+First sync up the python dependencies:
 
 ```
 pipenv sync
+```
+
+### PostgreSQL DB
+
+Relevant DB `.env` variables:
+
+```
+DATABASE_NAME=paralink_node
+DATABASE_HOST=psql
+DATABASE_USER=paralink
+DATABASE_PASSWORD=p4r4link
+```
+
+Migrate the DB with:
+```
+pipenv run alembic upgrade head
+```
+
+### IPFS
+
+For executing PQL jobs an IPFS daemon is required. Follow the instructions on [their site](https://docs.ipfs.io/install/) to get it running. To run the daemon you can use:
+
+```
+IPFS_PATH=~/.ipfs ipfs daemon &
+```
+
+Set the `.env` variable `IPFS_API_SERVER_ADDRESS` to the IPFS API service:
+
+```
+IPFS_API_SERVER_ADDRESS=/ip4/127.0.0.1/tcp/5001
+```
+
+### Event processing
+
+For dispatching events, we need RabbitMQ. We use `docker` to deploy it:
+
+```
+docker run -d -p 5672:5672 rabbitmq
+```
+
+To start listening for on-chain events start celery workers:
+
+```
+pipenv run celery -A src.process.processor worker -l DEBUG -Q collect,execute
+```
+
+which spawns two queues for collecting events and executing PQL definitions defined in the events.
+
+Alternatively you can disable the background worker by setting the following environment variable to `False` in the [.env](.env.template) file:
+
+```
+ENABLE_BACKGROUND_WORKER=False
+```
+
+### Running the node
+
+To run the node, use:
+
+```
 ./paralink-node node start
 ```
 
@@ -106,18 +172,18 @@ The node exposes two JSON RPC methods, which will execute PQL depending on the l
 
 Furthermore see [examples](examples) folder for additional examples on how to use the node directly.
 
-#### Event processing
 
-To start listening for on-chain events start celery workers:
+### React UI
 
-```
-docker run -d -p 5672:5672 rabbitmq
-pipenv run celery -A src.process.processor worker -l DEBUG -Q collect,execute
-```
+To run the React UI, follow the instructions in the [paralink-ui repo](https://github.com/paralink-network/paralink-ui). It lists all your local IPFS files as well as allows you to create your own PQL definitions, test them and save them to IPFS.
 
-which spawns two queues for collecting events and executing PQL definitions defined in the events.
 
-Solidity contracts are available [here](https://github.com/paralink-network/solidity-contracts). Start a `ganache-cli` and call:
+### Oracles
+
+
+#### Solidity
+
+Solidity  contracts are available [in soliditiy-contracts](https://github.com/paralink-network/solidity-contracts). Start a `ganache-cli` and call:
 
 ```
 pipenv run brownie run oracle main
@@ -125,21 +191,10 @@ pipenv run brownie run oracle main
 
 to deploy the `ParalinkOracle` contracts in the `solidity-contracts` repo.
 
-## Docker run
+#### Substrate
 
-We suggest using Docker to run the image:
+Substrate contracts are available in the [ink-contracts repo](https://github.com/paralink-network/ink-contracts).
 
-```
-docker build -t paralink-node .
-docker run -it -p 7424:7424 paralink-node ./paralink-node node start --host 0.0.0.0
-```
-
-`docker-compose.yml` file is also available.
-
-
-## Web UI
-
-A Web UI is accessible on [localhost:7424](http://localhost:7424). It lists all your local IPFS files as well as allows you to create your own PQL definitions, test them and save them to IPFS.
 
 ## Docs
 
