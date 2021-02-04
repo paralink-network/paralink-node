@@ -25,7 +25,10 @@ def create_app(args={}) -> Sanic:  # noqa: C901
     jsonrpc = SanicJsonrpc(app, post_route="/rpc", ws_route="/ws")
     CORS(app)
 
-    asyncio.get_event_loop().run_until_complete(db.set_bind(app.config["DATABASE_URL"]))
+    if app.config["ENABLE_DATABASE"]:
+        asyncio.get_event_loop().run_until_complete(
+            db.set_bind(app.config["DATABASE_URL"])
+        )
 
     # Set UI
     session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)

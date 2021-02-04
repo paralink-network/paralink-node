@@ -59,6 +59,7 @@ class Config:
 
     # Whether to start a background worker that will collect events from chains
     ENABLE_BACKGROUND_WORKER = getenv("ENABLE_BACKGROUND_WORKER", "True") == "True"
+    ENABLE_DATABASE = getenv("ENABLE_DATABASE", True)
 
     # Default number of confirmations for ETH finality
     DEFAULT_NUM_CONFIRMATIONS = 40
