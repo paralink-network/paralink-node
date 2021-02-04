@@ -1,3 +1,4 @@
 #!/bin/bash
 
+pipenv run alembic upgrade head
 pipenv run python3 -m src.__main__ "$@"
