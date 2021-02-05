@@ -32,6 +32,7 @@ services:
       - psql
       - ipfs
       - rabbitmq
+      - paralink_node
     networks:
       - backend
     restart: on-failure
