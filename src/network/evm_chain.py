@@ -22,7 +22,8 @@ class EvmChain(Chain):
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
     ):
         super().__init__(name, url, credentials, active, tracked_contracts)
-        self._validate_chain()
+        if config.VALIDATE_EVM_CHAIN:
+            self._validate_chain()
         self.oracle_metadata = oracle_metadata
 
     def get_connection(self) -> Web3:
