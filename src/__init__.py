@@ -26,9 +26,7 @@ def create_app(args={}) -> Sanic:  # noqa: C901
     CORS(app)
 
     if app.config["ENABLE_DATABASE"]:
-        asyncio.get_event_loop().run_until_complete(
-            db.set_bind(app.config["DATABASE_URL"])
-        )
+        db.init_app(app)
 
     # Set UI
     session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
@@ -183,17 +181,37 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         except Exception as e:
             return response.json({"error": e.message})
 
-    @app.get("/add_contract_oracle/<address>")
-    async def add_contract_oracle(request, address: str):
+    @app.post("/add_contract_oracle")
+    async def add_contract_oracle(request):
         """Adds a contract to be tracked by the node.
 
         Args:
-            request:
-            address (str): address to be tracked
+            request: request object
         """
         from src.models import ContractOracle
 
-        await ContractOracle.create(id=address, active=True)
+        data = request.json
+        await ContractOracle.create(
+            id=data["address"], active=data.get("active", True), chain=data["chain"]
+        )
+        return response.json({"result": "ok"})
+
+    @app.post("/add_chain")
+    async def add_chain(request):
+        """Adds chain information to the database.
+
+        Args:
+            request: request object
+
+        Returns:
+            json response if chain was added successfully.
+        """
+        from src.models import Chain
+
+        data = request.json
+        await Chain.create(
+            name=data["name"], chain_type=data["chain_type"], url=data["url"]
+        )
         return response.json({"result": "ok"})
 
     return app
