@@ -38,7 +38,7 @@ class Chains:
             chain["tracked_contracts"] = [
                 contract["id"]
                 for contract in contract_data
-                if contract["chain"] == chain["name"]
+                if contract["active"] and contract["chain"] == chain["name"]
             ]
         return cls.chain_factory(chain_data)
 

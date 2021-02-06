@@ -1,15 +1,15 @@
 """add chains table
 
-Revision ID: bc8b9852d38e
+Revision ID: 20a8d9e9ed4e
 Revises: 8bf91192e068
-Create Date: 2021-02-06 17:11:22.242596
+Create Date: 2021-02-06 23:01:31.024523
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "bc8b9852d38e"
+revision = "20a8d9e9ed4e"
 down_revision = "8bf91192e068"
 branch_labels = None
 depends_on = None
@@ -21,6 +21,7 @@ def upgrade():
         "chains",
         sa.Column("name", sa.String(length=42), nullable=False),
         sa.Column("chain_type", sa.String(length=42), nullable=True),
+        sa.Column("active", sa.Boolean(), nullable=True),
         sa.Column("url", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("name"),
     )

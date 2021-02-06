@@ -210,7 +210,10 @@ def create_app(args={}) -> Sanic:  # noqa: C901
 
         data = request.json
         await Chain.create(
-            name=data["name"], chain_type=data["chain_type"], url=data["url"]
+            name=data["name"],
+            chain_type=data["chain_type"],
+            active=data["active"],
+            url=data["url"],
         )
         return response.json({"result": "ok"})
 

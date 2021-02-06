@@ -8,11 +8,17 @@ class Chain(db.Model):  # type: ignore
 
     name = db.Column(db.String(length=42), primary_key=True)
     chain_type = db.Column(db.String(length=42))
+    active = db.Column(db.Boolean(), default=True)
     url = db.Column(db.String())
 
     @property
     def serialize(self):
-        return {"name": self.name, "type": self.chain_type, "url": self.url}
+        return {
+            "name": self.name,
+            "type": self.chain_type,
+            "active": self.active,
+            "url": self.url,
+        }
 
 
 class ContractOracle(db.Model):  # type: ignore
