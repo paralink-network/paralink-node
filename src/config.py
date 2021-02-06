@@ -75,6 +75,8 @@ class Config:
     ]
     PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PQL_CUSTOM_METHODS_IMPORTS)
 
+    EVM_CHAIN_REFERENCE_DATA = json.load(open("src/data/evm_chains.json"))
+
     def __init__(self):
         Path(self.DATA_FOLDER).mkdir(exist_ok=True)
 

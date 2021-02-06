@@ -9,23 +9,6 @@ from src.network.chain import Chain
 from src.network.exceptions import ChainValidationFailed
 
 logger = logging.getLogger(__name__)
-chain_reference_data = json.load(open("src/data/chains.json"))
-
-
-def fetch_chain_data(name: str) -> dict:
-    """A function to fetch chain reference data.
-
-    Args:
-        name (str): chain name.
-
-    Returns:
-        reference data associated with chain_id and network_id.
-    """
-    short_name, network = name.split(".")
-    for chain in chain_reference_data:
-        if chain["shortName"] == short_name and chain["network"] == network:
-            return chain
-    return {}
 
 
 class EvmChain(Chain):
@@ -38,30 +21,37 @@ class EvmChain(Chain):
         tracked_contracts=[],
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
     ):
-        self.chain_data = fetch_chain_data(name)
-        self.oracle_metadata = oracle_metadata
         super().__init__(name, url, credentials, active, tracked_contracts)
+        self.validate_chain()
+        self.oracle_metadata = oracle_metadata
 
     def get_connection(self) -> Web3:
         """Return Web3 connection to the chain specified by `url`."""
         if self.url.startswith("ws"):
-            web3 = Web3(Web3.WebsocketProvider(self.url))
+            return Web3(Web3.WebsocketProvider(self.url))
         elif self.url.startswith("http"):
-            web3 = Web3(Web3.HTTPProvider(self.url))
+            return Web3(Web3.HTTPProvider(self.url))
         else:
             raise ValueError("URL type not supported")
 
-        if self.chain_data and (
-            int(web3.net.version) != self.chain_data["networkId"]
-            or web3.eth.chainId != self.chain_data["chainId"]
+    def validate_chain(self) -> None:
+        """Validates the web3 instance has the expected chainId and networkId.
+
+        Raises:
+            ChainValidationFailed: if the chain fails validation
+        """
+        w3 = self.get_connection()
+        chain_data = self.get_evm_chain_reference_data()
+
+        if chain_data and (
+            int(w3.net.version) != chain_data["networkId"]
+            or w3.eth.chainId != chain_data["chainId"]
         ):
             raise ChainValidationFailed(
                 f"Chain validation failed for {self.name} "
-                f"- Expected (chainId, networkId): {self.chain_data['chainId'], self.chain_data['networkId']} "
-                f"- Actual: {web3.eth.chainId, web3.net.version}"
+                f"- Expected (chainId, networkId): {chain_data['chainId'], chain_data['networkId']} "
+                f"- Actual: {w3.eth.chainId, int(w3.net.version)}"
             )
-
-        return web3
 
     def fulfill(self, event: dict, res: typing.Any) -> None:
         """It writes `res` (result of the PQL definition) to the location specified in the `Request` event.
@@ -96,3 +86,15 @@ class EvmChain(Chain):
         tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
         logger.info(f"[{self.name}] Received TX receipt: {tx_receipt}")
+
+    def get_evm_chain_reference_data(self) -> dict:
+        """A function to fetch evm chain reference data.
+
+        Returns:
+            reference data associated with chain_id and network_id.
+        """
+        short_name, network = self.name.split(".")
+        for chain in config.EVM_CHAIN_REFERENCE_DATA:
+            if chain["shortName"] == short_name and chain["network"] == network:
+                return chain
+        return {}
