@@ -3,7 +3,19 @@ from sanic.exceptions import InvalidUsage
 
 
 def validate_request(request: dict, schema: dict) -> None:
-    errors = Draft7Validator(schema).iter_errors(request)
+    """Validate api request.
+
+    Args:
+        request: request dictionary.
+        schema: schema to validate against.
+
+    Returns:
+        None if validation is successful.
+
+    Raises:
+          InvalidUsage: if request request does not adhere to the schema.
+    """
+    errors = [error for error in Draft7Validator(schema).iter_errors(request)]
     if errors:
         message = "\n".join(
             [

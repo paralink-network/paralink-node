@@ -44,6 +44,11 @@ class Chains:
 
     @staticmethod
     async def _get_chains_and_contracts_from_database():
+        """get chain and contract data from database.
+
+        Returns:
+            chain and contract data.
+        """
         chain_data = await Chain.query.gino.all()
         contract_data = await ContractOracle.query.gino.all()
         return [x.serialize for x in chain_data], [x.serialize for x in contract_data]
@@ -66,6 +71,15 @@ class Chains:
 
     @classmethod
     def chain_factory(cls, chain_config):
+        """Instantiate chains using appropriate constructors and then instantiate a
+        `Chains` object using these chains.
+
+        Args:
+            chain_config: the chain configuration that specifies the chains to be instantiated.
+
+        Returns:
+            `Chains` object containing the chains specified in chain_config.
+        """
         evm = {}
         substrate = {}
         for chain in chain_config:
