@@ -9,6 +9,7 @@ from substrateinterface.contracts import (
 )
 
 from src.network.chain import Chain
+from src.network.exceptions import ChainValidationFailed
 
 logger = logging.getLogger(__name__)
 
@@ -183,3 +184,17 @@ class SubstrateChain(Chain):
         logger.info(
             f"[{self.name}] Reading the value from contract after the callback {result}",
         )
+
+    def _validate_chain(self) -> None:
+        """Validates the SubstrateInterface is connected to the expected chain.
+
+        Raises:
+            ChainValidationFailed: if the chain fails validation.
+        """
+        substrate_interface = self.get_connection()
+        if self.name != substrate_interface.chain.lower():
+            raise ChainValidationFailed(
+                f"Chain validation failed for {self.name} "
+                f"- Expected chain name: {self.name} "
+                f"- Actual: {substrate_interface.chain}"
+            )

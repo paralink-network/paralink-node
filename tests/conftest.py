@@ -1,7 +1,7 @@
 # patch environment
 import os
 
-os.environ["VALIDATE_EVM_CHAIN"] = "False"
+os.environ["VALIDATE_CHAINS"] = "False"
 
 import pytest  # noqa: E402
 
