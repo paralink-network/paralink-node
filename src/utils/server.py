@@ -3,7 +3,7 @@ from sanic.exceptions import InvalidUsage
 
 
 def validate_request(request: dict, schema: dict) -> None:
-    errors = [error for error in Draft7Validator(schema).iter_errors(request)]
+    errors = Draft7Validator(schema).iter_errors(request)
     if errors:
         message = "\n".join(
             [
