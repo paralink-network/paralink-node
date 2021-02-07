@@ -12,9 +12,11 @@ from sanic_session import InMemorySessionInterface
 
 from src.config import config
 from src.models import db
+from src.models.schema import chain, contract_oracle
 from src.network import chains
 from src.pql.exceptions import PqlDecodingError
 from src.pql.parser import parse_and_execute
+from src.utils.server import validate_request
 
 
 def create_app(args={}) -> Sanic:  # noqa: C901
@@ -190,8 +192,9 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         from src.models import ContractOracle
 
         data = request.json
+        validate_request(data, contract_oracle)
         await ContractOracle.create(
-            id=data["address"], active=data.get("active", True), chain=data["chain"]
+            id=data["id"], active=data["active"], chain=data["chain"]
         )
         return response.json({"result": "ok"})
 
@@ -208,6 +211,7 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         from src.models import Chain
 
         data = request.json
+        validate_request(data, chain)
         await Chain.create(
             name=data["name"],
             chain_type=data["chain_type"],
