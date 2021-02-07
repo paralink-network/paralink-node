@@ -1,4 +1,10 @@
 #!/bin/bash
 
-pipenv run alembic upgrade head
-pipenv run python3 -m src.__main__ "$@"
+if [ $1 == "node" ]
+then
+  pipenv run alembic upgrade head
+  pipenv run python3 -m src.__main__ "$@"
+elif [ $1 == "pytest" ]
+then
+    PIPENV_DOTENV_LOCATION=tests.env pipenv run "$@"
+fi

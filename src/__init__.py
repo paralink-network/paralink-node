@@ -20,7 +20,6 @@ from src.pql.parser import parse_and_execute
 def create_app(args={}) -> Sanic:  # noqa: C901
     app = Sanic("src")
     app.config.from_object(config)
-    app.update_config(args)
 
     jsonrpc = SanicJsonrpc(app, post_route="/rpc", ws_route="/ws")
     CORS(app)

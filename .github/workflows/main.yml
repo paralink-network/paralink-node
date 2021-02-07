@@ -44,7 +44,7 @@ jobs:
 
       - name: Run test suite
         run: |
-          pipenv run pytest -svvv tests
+          ./paralink-node pytest -svvv tests
 
   pre-commit:
     runs-on: ubuntu-latest
