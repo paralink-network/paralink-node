@@ -11,6 +11,7 @@ from sanic_jsonrpc import SanicJsonrpc
 from sanic_session import InMemorySessionInterface
 
 from src.config import config
+from src.logging import DEFAULT_LOGGING_CONFIG
 from src.models import db
 from src.network import chains
 from src.pql.exceptions import PqlDecodingError
@@ -18,7 +19,7 @@ from src.pql.parser import parse_and_execute
 
 
 def create_app(args={}) -> Sanic:  # noqa: C901
-    app = Sanic("src")
+    app = Sanic("src", log_config=DEFAULT_LOGGING_CONFIG)
     app.config.from_object(config)
     app.update_config(args)
 

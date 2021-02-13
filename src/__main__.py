@@ -26,7 +26,7 @@ see 'paralink-node <command> --help' for more information on a specific command.
 def main():
     args = docopt(__doc__, version=__version__, options_first=True)
 
-    setup_logging(logging.DEBUG if config.DEBUG else logging.INFO)
+    setup_logging()
 
     if args["<command>"] == "node":
         src.cli.node.main()
