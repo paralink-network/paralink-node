@@ -1,4 +1,5 @@
 from src.config import config
+from src.network import chains
 
 step_extract_http = {
     "type": "object",
@@ -29,8 +30,9 @@ step_extract_eth = {
         "step": {"const": "extract"},
         "method": {"enum": ["eth.balance", "eth.function"]},
         "address": {"type": "string"},
+        "chain": {"enum": [evm_chain for evm_chain in chains.evm]},
     },
-    "required": ["step", "method", "address"],
+    "required": ["step", "method", "address", "chain"],
     "if": {"properties": {"method": {"const": "eth.balance"}}},
     "then": {
         "properties": {
