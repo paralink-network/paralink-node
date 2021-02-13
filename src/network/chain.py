@@ -1,9 +1,4 @@
-from abc import ABC, abstractmethod
-
-from src.config import config
-
-
-class Chain(ABC):
+class Chain:
     """Blockchain abstraction for different chains."""
 
     def __init__(
@@ -29,9 +24,3 @@ class Chain(ABC):
         self.credentials = credentials
         self.tracked_contracts = tracked_contracts
         self.active = active
-        if config.VALIDATE_CHAINS:
-            self._validate_chain()
-
-    @abstractmethod
-    def _validate_chain(self):
-        pass

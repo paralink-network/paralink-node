@@ -38,11 +38,11 @@ class SubstrateChain(Chain):
 
         self.metadata_file = metadata_file
 
-    def get_connection(self) -> SubstrateInterface:
+    def get_connection(self, validate_chain: bool = True) -> SubstrateInterface:
         """Connects to Substrate chain on given `url` and returns `SubstrateInterface`.
 
         Args:
-            url (str): parachain URL
+            validate_chain: specify if the chain should be validated.
 
         Returns:
             SubstrateInterface: interface with which we can interact with the parachain.
@@ -50,7 +50,12 @@ class SubstrateChain(Chain):
         Raises:
             ConnectionRefusedError: connection could not be established.
         """
-        return SubstrateInterface(self.url)
+        substrate_interface = SubstrateInterface(self.url)
+
+        if validate_chain:
+            self._validate_chain(substrate_interface)
+
+        return substrate_interface
 
     def check_valid_contracts(self, substrate: SubstrateInterface = None) -> None:
         """Iterates over `self.tracked_contracts` and checks whether the contract is
@@ -185,13 +190,12 @@ class SubstrateChain(Chain):
             f"[{self.name}] Reading the value from contract after the callback {result}",
         )
 
-    def _validate_chain(self) -> None:
+    def _validate_chain(self, substrate_interface: SubstrateInterface) -> None:
         """Validates the SubstrateInterface is connected to the expected chain.
 
         Raises:
             ChainValidationFailed: if the chain fails validation.
         """
-        substrate_interface = self.get_connection()
         if self.name != substrate_interface.chain.lower():
             raise ChainValidationFailed(
                 f"Chain validation failed for {self.name} "

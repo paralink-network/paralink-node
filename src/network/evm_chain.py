@@ -1,4 +1,3 @@
-import json
 import logging
 import typing
 
@@ -20,18 +19,33 @@ class EvmChain(Chain):
         active=True,
         tracked_contracts=[],
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
+        evm_chain_reference_data=config.EVM_CHAIN_REFERENCE_DATA,
     ):
         super().__init__(name, url, credentials, active, tracked_contracts)
-        self.oracle_metadata = oracle_metadata
 
-    def get_connection(self) -> Web3:
-        """Return Web3 connection to the chain specified by `url`."""
+        self.oracle_metadata = oracle_metadata
+        self.evm_chain_reference_data = evm_chain_reference_data
+
+    def get_connection(self, validate_chain: bool = True) -> Web3:
+        """Return Web3 connection to the chain specified by `url`.
+
+        Args:
+            validate_chain: specify if the chain should be validated.
+
+        Returns:
+            Web3: web3 client used to interact with the evm chain.
+        """
         if self.url.startswith("ws"):
-            return Web3(Web3.WebsocketProvider(self.url))
+            w3 = Web3(Web3.WebsocketProvider(self.url))
         elif self.url.startswith("http"):
-            return Web3(Web3.HTTPProvider(self.url))
+            w3 = Web3(Web3.HTTPProvider(self.url))
         else:
             raise ValueError("URL type not supported")
+
+        if validate_chain:
+            self._validate_chain(w3)
+
+        return w3
 
     def fulfill(self, event: dict, res: typing.Any) -> None:
         """It writes `res` (result of the PQL definition) to the location specified in the `Request` event.
@@ -67,13 +81,12 @@ class EvmChain(Chain):
 
         logger.info(f"[{self.name}] Received TX receipt: {tx_receipt}")
 
-    def _validate_chain(self) -> None:
+    def _validate_chain(self, w3: Web3) -> None:
         """Validates the web3 instance has the expected chainId and networkId.
 
         Raises:
             ChainValidationFailed: if the chain fails validation
         """
-        w3 = self.get_connection()
         chain_data = self._get_evm_chain_reference_data()
 
         if chain_data and (
@@ -93,7 +106,7 @@ class EvmChain(Chain):
             reference data associated with chain_id and network_id.
         """
         short_name, network = self.name.split(".")
-        for chain in config.EVM_CHAIN_REFERENCE_DATA:
+        for chain in self.evm_chain_reference_data:
             if chain["shortName"] == short_name and chain["network"] == network:
                 return chain
         return {}

@@ -1,11 +1,6 @@
-# patch environment
-import os
+import pytest
 
-os.environ["VALIDATE_CHAINS"] = "False"
-
-import pytest  # noqa: E402
-
-from src import create_app  # noqa: E402
+from src import create_app
 
 
 @pytest.fixture(scope="session")
