@@ -24,7 +24,9 @@ class EvmChain(Chain):
         super().__init__(name, url, credentials, active, tracked_contracts)
 
         self.oracle_metadata = oracle_metadata
-        self.evm_chain_reference_data = evm_chain_reference_data
+        self.chain_reference_data = self._get_evm_chain_reference_data(
+            evm_chain_reference_data
+        )
 
     def get_connection(self, validate_chain: bool = True) -> Web3:
         """Return Web3 connection to the chain specified by `url`.
@@ -89,26 +91,28 @@ class EvmChain(Chain):
         Raises:
             ChainValidationFailed: if the chain fails validation
         """
-        chain_data = self._get_evm_chain_reference_data()
-
-        if chain_data and (
-            int(w3.net.version) != chain_data["networkId"]
-            or w3.eth.chainId != chain_data["chainId"]
+        if self.chain_reference_data and (
+            int(w3.net.version) != self.chain_reference_data["networkId"]
+            or w3.eth.chainId != self.chain_reference_data["chainId"]
         ):
             raise ChainValidationFailed(
                 f"Chain validation failed for {self.name} "
-                f"- Expected (chainId, networkId): {chain_data['chainId'], chain_data['networkId']} "
+                f"- Expected (chainId, networkId): "
+                f"{self.chain_reference_data['chainId'], self.chain_reference_data['networkId']} "
                 f"- Actual: {w3.eth.chainId, int(w3.net.version)}"
             )
 
-    def _get_evm_chain_reference_data(self) -> dict:
-        """A function to fetch evm chain reference data.
+    def _get_evm_chain_reference_data(self, evm_chain_reference_data: dict) -> dict:
+        """A function to fetch relevant evm chain reference data from source.
+
+        Args:
+            evm_chain_reference_data: evm chain reference data source.
 
         Returns:
             reference data associated with chain_id and network_id.
         """
         short_name, network = self.name.split(".")
-        for chain in self.evm_chain_reference_data:
+        for chain in evm_chain_reference_data:
             if chain["shortName"] == short_name and chain["network"] == network:
                 return chain
         return {}
