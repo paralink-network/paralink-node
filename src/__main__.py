@@ -1,7 +1,9 @@
+import logging
+
 from docopt import docopt
 
 import src.cli.node
-from src.config import __version__
+from src.config import __version__, config
 from src.logging import setup_logging
 
 __doc__ = """
@@ -24,7 +26,7 @@ see 'paralink-node <command> --help' for more information on a specific command.
 def main():
     args = docopt(__doc__, version=__version__, options_first=True)
 
-    setup_logging()
+    setup_logging(logging.DEBUG if config.DEBUG else logging.INFO)
 
     if args["<command>"] == "node":
         src.cli.node.main()

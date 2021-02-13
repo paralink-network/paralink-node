@@ -4,7 +4,7 @@ import sys
 from src.config import config
 
 
-def setup_logging():
+def setup_logging(default_log_level=logging.INFO):
     """Initializes logging."""
     logging_format = (
         "%(asctime)s [%(process)d] [%(levelname)s] "
@@ -13,7 +13,7 @@ def setup_logging():
     )
     logging.basicConfig(
         stream=sys.stdout,
-        level=logging.DEBUG if config.DEBUG else logging.INFO,
+        level=default_log_level,
         format=logging_format,
     )
     logging.getLogger("sanic.root").propagate = False
