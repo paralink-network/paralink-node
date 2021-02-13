@@ -202,5 +202,5 @@ class SubstrateChain(Chain):
             raise ChainValidationFailed(
                 f"Chain validation failed for {self.name} "
                 f"- Expected chain name: {self.name} "
-                f"- Actual: {substrate_interface.chain}"
+                f"- Actual: {substrate_interface.chain.lower()}"
             )
