@@ -63,7 +63,7 @@ class SubstrateChain(Chain):
             )
             if not contract_info:
                 logger.warn(
-                    f"[{self.name}] Contract {contract_address} does not exist on chain."
+                    f"[[bold]{self.name}[/]] Contract {contract_address} does not exist on chain."
                 )
 
     def create_contract_from_address(
@@ -149,7 +149,9 @@ class SubstrateChain(Chain):
             },
         )
 
-        logger.debug(f"[{self.name}] Estimating gas fee: {predicted_gas.gas_consumed}")
+        logger.debug(
+            f"[[bold]{self.name}[/]] Estimating gas fee: {predicted_gas.gas_consumed}"
+        )
 
         # Execute call
         receipt = contract.exec(
@@ -163,17 +165,17 @@ class SubstrateChain(Chain):
             gas_limit=predicted_gas.gas_consumed * 2,
         )
 
-        logger.info(f"[{self.name}] Callback substrate receipt: {receipt}")
+        logger.info(f"[[bold]{self.name}[/]] Callback substrate receipt: {receipt}")
 
         if receipt.is_succes:
             # Log the callback completed events
             for contract_event in receipt.contract_events:
                 logger.info(
-                    f"[{self.name}] Contract callback events {contract_event.name} {contract_event.docs}:  {contract_event.value}"
+                    f"[[bold]{self.name}[/]] Contract callback events {contract_event.name} {contract_event.docs}:  {contract_event.value}"
                 )
         else:
             raise Exception(
-                f"[{self.name}] Contract fulfill request {args} unsuccessful {receipt.error_message}"
+                f"[[bold]{self.name}[/]] Contract fulfill request {args} unsuccessful {receipt.error_message}"
             )
 
         # Read back the result
@@ -181,5 +183,5 @@ class SubstrateChain(Chain):
             keypair, "oracle_results", args={"request_id": args["request_id"]}
         )
         logger.info(
-            f"[{self.name}] Reading the value from contract after the callback {result}",
+            f"[[bold]{self.name}[/]] Reading the value from contract after the callback {result}",
         )
