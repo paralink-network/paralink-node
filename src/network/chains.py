@@ -39,22 +39,24 @@ class Chains:
             evm = {}
             substrate = {}
             for chain in chain_config:
-                if chain["type"] == "evm":
-                    evm[chain["name"]] = EvmChain(
-                        name=chain["name"],
-                        url=chain["url"],
-                        credentials=chain.get("credentials", {}),
-                        tracked_contracts=chain.get("tracked_contracts", []),
-                    )
-                elif chain["type"] == "substrate":
-                    substrate[chain["name"]] = SubstrateChain(
-                        name=chain["name"],
-                        url=chain["url"],
-                        credentials=chain.get("credentials", {}),
-                        tracked_contracts=chain.get("tracked_contracts", []),
-                        metadata_file=chain.get(
-                            "metadata_file", "src/data/polkadot/oracle_metadata.json"
-                        ),
-                    )
+                if "enabled" in chain and chain["enabled"]:
+                    if chain["type"] == "evm":
+                        evm[chain["name"]] = EvmChain(
+                            name=chain["name"],
+                            url=chain["url"],
+                            credentials=chain.get("credentials", {}),
+                            tracked_contracts=chain.get("tracked_contracts", []),
+                        )
+                    elif chain["type"] == "substrate":
+                        substrate[chain["name"]] = SubstrateChain(
+                            name=chain["name"],
+                            url=chain["url"],
+                            credentials=chain.get("credentials", {}),
+                            tracked_contracts=chain.get("tracked_contracts", []),
+                            metadata_file=chain.get(
+                                "metadata_file",
+                                "src/data/polkadot/oracle_metadata.json",
+                            ),
+                        )
 
             return cls(evm, substrate)

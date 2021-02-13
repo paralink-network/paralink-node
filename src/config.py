@@ -41,6 +41,7 @@ def parse_and_import_custom_methods(plugins_config_path: Path) -> dict:
 class Config:
     DEBUG = getenv("DEBUG", "False") == "True"
     TESTING = getenv("TESTING", "False") == "True"
+    LOG_LEVEL = getenv("LOG_LEVEL", "INFO")
 
     # Ethereum
     ETHERSCAN_KEY = getenv("ETHERSCAN_KEY")

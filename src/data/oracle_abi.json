@@ -47,6 +47,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "callbackAddress",
         "type": "address"
@@ -95,6 +101,7 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "_fee", "type": "uint256" },
       { "internalType": "bytes32", "name": "_requestId", "type": "bytes32" },
       { "internalType": "bytes4", "name": "_callbackFunc", "type": "bytes4" },
       { "internalType": "uint256", "name": "_expiration", "type": "uint256" }
@@ -107,6 +114,7 @@
   {
     "inputs": [
       { "internalType": "bytes32", "name": "_requestId", "type": "bytes32" },
+      { "internalType": "uint256", "name": "_fee", "type": "uint256" },
       {
         "internalType": "address",
         "name": "_callbackAddress",
@@ -127,6 +135,13 @@
   },
   {
     "inputs": [],
+    "name": "minimumFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
@@ -142,6 +157,7 @@
   {
     "inputs": [
       { "internalType": "bytes32", "name": "_ipfsHash", "type": "bytes32" },
+      { "internalType": "uint256", "name": "_fee", "type": "uint256" },
       { "internalType": "address", "name": "_sender", "type": "address" },
       {
         "internalType": "address",
@@ -158,7 +174,7 @@
     ],
     "name": "request",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -173,11 +189,38 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "_newFee", "type": "uint256" }
+    ],
+    "name": "setMinimumFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_recipient", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawableBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
   }
 ]
+

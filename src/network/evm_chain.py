@@ -45,23 +45,25 @@ class EvmChain(Chain):
         contract = w3.eth.contract(abi=self.oracle_metadata, address=event["address"])
 
         logger.info(
-            f"[{self.name}] Fullfil request{args['requestId']} with value {res}."
+            f"[[bold]{self.name}[/]] Fulfill request{args['requestId']} with value {res}."
         )
+
+        eth_key = w3.eth.account.from_key(self.credentials["private_key"])
 
         tx = contract.functions.fulfillRequest(
             args["requestId"],
+            args["fee"],
             args["callbackAddress"],
             args["callbackFunctionId"],
             args["expiration"],
             w3.toBytes(int(res)).rjust(32, b"\0"),
-        ).buildTransaction()
+        ).buildTransaction({"from": eth_key.address})
 
-        eth_key = w3.eth.account.from_key(self.credentials["private_key"])
-
+        tx["gas"] *= 2
         tx.update({"nonce": w3.eth.getTransactionCount(eth_key.address)})
 
         signed_tx = w3.eth.account.signTransaction(tx, eth_key.privateKey)
         tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
         tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
-        logger.info(f"[{self.name}] Received TX receipt: {tx_receipt}")
+        logger.info(f"[[bold]{self.name}[/]] Received TX receipt: {tx_receipt}")

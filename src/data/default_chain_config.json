@@ -5,6 +5,7 @@
     "project": "eth",
     "url":  "https://mainnet.infura.io/v3/<infura-project-id>",
     "credentials": {},
+    "enabled": true,
     "tracked_contracts": []
   }
 ]
