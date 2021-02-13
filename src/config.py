@@ -95,7 +95,6 @@ class Config:
     PQL_CUSTOM_METHODS = parse_and_import_custom_methods(PLUGINS_CONFIG_PATH)
 
     EVM_CHAIN_REFERENCE_DATA = json.load(open("src/data/evm_chains.json"))
-    VALIDATE_CHAINS = getenv("VALIDATE_CHAINS", "True") == "True"
 
     def __init__(self):
         # Create default chain config if it doesn't exist
