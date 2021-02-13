@@ -37,10 +37,12 @@ def handle_evm_request_event(self, evm_chain: EvmChain, event: dict) -> None:
         ipfs = ipfshttpclient.connect(config.IPFS_API_SERVER_ADDRESS)
         req = ipfs.get_json(ipfs_hash, timeout=3)
 
-        logger.debug(f"[{evm_chain.name}] Obtained PQL definition {req}.")
+        logger.debug(f"[[bold]{evm_chain.name}[/]] Obtained PQL definition {req}.")
 
         res = asyncio.run(parse_and_execute(req))
-        logger.info(f"[{evm_chain.name}] Obtained result {res}.")
+        logger.info(
+            f"[[bold]{evm_chain.name}[/]] Obtained result {res} for {ipfs_hash}."
+        )
 
         evm_chain.fulfill(event, res)
     except Exception as e:
@@ -48,7 +50,7 @@ def handle_evm_request_event(self, evm_chain: EvmChain, event: dict) -> None:
             self.retry(exc=e)
         else:
             logger.info(
-                f"Request {args['requestId']} from {args['requester']} expired due to {str(type(e))}: {e.args[0]}."
+                f"[[bold]{evm_chain.name}[/]] Request {args['requestId']} from {args['requester']} expired due to {str(type(e))}: {e.args[0]}."
             )
             return
 
@@ -86,10 +88,14 @@ def handle_substrate_request_event(
         ipfs = ipfshttpclient.connect(config.IPFS_API_SERVER_ADDRESS)
         req = ipfs.get_json(ipfs_hash, timeout=3)
 
-        logger.debug(f"[{substrate_chain.name}] Obtained PQL definition {req}.")
+        logger.debug(
+            f"[[bold]{substrate_chain.name}[/]] Obtained PQL definition {req}."
+        )
 
         res = asyncio.run(parse_and_execute(req))
-        logger.info(f"[{substrate_chain.name}] Obtained result {res}.")
+        logger.info(
+            f"[[bold]{substrate_chain.name}[/]] Obtained result {res} for {ipfs_hash}."
+        )
 
         substrate_chain.fulfill(contract, args, res)
     except Exception as e:
@@ -101,6 +107,6 @@ def handle_substrate_request_event(
             self.retry(exc=e)
         else:
             logger.error(
-                f"[{substrate_chain.name}] Request {args['request_id']} from {args['from']} expired due to {str(type(e))}: {e.args[0]}"
+                f"[[bold]{substrate_chain.name}[/]] Request {args['request_id']} from {args['from']} expired due to {str(type(e))}: {e.args[0]}."
             )
             return

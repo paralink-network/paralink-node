@@ -1,7 +1,9 @@
+import logging
+
 from docopt import docopt
 
 import src.cli.node
-from src.config import __version__
+from src.config import __version__, config
 from src.logging import setup_logging
 
 __doc__ = """

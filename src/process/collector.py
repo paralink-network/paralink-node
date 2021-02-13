@@ -19,9 +19,15 @@ logger = get_task_logger(__name__)
 async def start_collecting(chains: Chains) -> None:
     """Initiates collecting tasks for addresses specified in the `chains` object."""
     for chain_name, chain in chains.evm.items():
+        logger.info(
+            f"[[bold]{chain_name}[/]] Queued [yellow]listening for EVM events[/] task."
+        )
         listen_for_evm_events.delay(chain)
 
     for chain_name, chain in chains.substrate.items():
+        logger.info(
+            f"[[bold]{chain_name}[/]] Queued [yellow]listening for Substrate events[/] task."
+        )
         listen_for_substrate_events.delay(chain)
 
 
@@ -44,13 +50,17 @@ def listen_for_evm_events(evm_chain: EvmChain, poll_interval=2) -> None:
         )
         filt = contract.events.Request.createFilter(fromBlock="latest")
 
-        logger.info(f"Creating filter {filt} for address {contract_address}.")
+        logger.info(
+            f"[[bold]{evm_chain.name}[/]] Creating filter {filt} for address {contract_address}."
+        )
         event_filters.append(filt)
 
     while True:
         for event_filter in event_filters:
             for event in event_filter.get_new_entries():
-                logger.info(f"EVM Request found: {event}")
+                logger.info(
+                    f"[[bold]{evm_chain.name}[/]] Request found: {event} with filter {event_filter}."
+                )
 
                 handle_evm_request_event.delay(evm_chain, event)
 
@@ -84,7 +94,7 @@ def listen_for_substrate_events(
 
             for event, decoded_event in events:
                 logger.info(
-                    f"Found event {event} | {decoded_event}, block_nr {finalised_block_nr}, "
+                    f"[[bold]{substrate_chain.name}[/]] Found event {event} | {decoded_event}, block_nr {finalised_block_nr}, "
                 )
                 handle_substrate_request_event.delay(
                     substrate_chain,

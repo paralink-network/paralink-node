@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  nginx_frontend:
+    build:
+      context: ./paralink-ui
+      dockerfile: Dockerfile.production
+    depends_on:
+      - paralink_node
+    networks:
+      - frontend
+    ports:
+      - 7425:80
