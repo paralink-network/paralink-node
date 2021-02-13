@@ -1,4 +1,5 @@
 from celery import Celery
+from celery.signals import setup_logging
 
 from src.config import config
 
@@ -23,3 +24,12 @@ processor.conf.update(
         "interval_max": 0.5,
     },
 )
+
+
+@setup_logging.connect
+def config_loggers(*args, **kwags):
+    from logging.config import dictConfig
+
+    from src.logging import DEFAULT_LOGGING_CONFIG
+
+    dictConfig(DEFAULT_LOGGING_CONFIG)
