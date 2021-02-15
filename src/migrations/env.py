@@ -20,9 +20,9 @@ config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 fileConfig(config.config_file_name)
 
 # for 'autogenerate' support
-from src.models import Base  # noqa: E402
+from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
 
-target_metadata = Base.metadata
+target_metadata = declarative_base().metadata
 
 
 def run_migrations_offline():
