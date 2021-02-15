@@ -27,6 +27,11 @@ DEFAULT_LOGGING_CONFIG = {
             "qualname": "sanic.access",
             "propagate": False,
         },
+        "sqlalchemy.engine": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
     },
     "handlers": {
         "console": {
