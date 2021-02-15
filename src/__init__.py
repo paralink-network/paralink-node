@@ -1,6 +1,7 @@
 import asyncio
 
 from sanic import Sanic
+from sanic.log import logger
 from sanic_cors import CORS
 
 from src.api import ipfs_bp, pql_bp
@@ -10,7 +11,15 @@ from src.logging import DEFAULT_LOGGING_CONFIG
 from src.network import chains
 
 
-def create_app(args={}) -> Sanic:  # noqa: C901
+def create_app(args: dict = {}) -> Sanic:  # noqa: C901
+    """Creates Sanic app with all dependencies.
+
+    Args:
+        args (dict): CLI arguments dict.
+
+    Returns:
+        Sanic: Sanic app
+    """
     app = Sanic("src", log_config=DEFAULT_LOGGING_CONFIG)
     app.config.from_object(config)
     app.config.update(args)
@@ -33,24 +42,44 @@ def create_app(args={}) -> Sanic:  # noqa: C901
 
 
 def setup_database(app: Sanic):
+    """Initalizes DB session.
+
+    Args:
+        app (Sanic): Sanic app
+    """
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
     from sqlalchemy.orm import scoped_session, sessionmaker
 
-    engine = create_async_engine(
-        app.config.DATABASE_URL,
-        echo=True,
-    )
+    engine = create_async_engine(app.config.DATABASE_URL)
 
     @app.listener("before_server_start")
     async def connect_to_db(*args, **kwargs):
+        """Initalizes DB before server starts."""
         app.db = scoped_session(
             sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
         )()
 
     @app.listener("after_server_start")
     async def check_user_signup(*args, **kwargs):
-        pass
+        """Checks whether user is present in the DB."""
+        from src.cli.utils.user_prompt import user_prompt
+        from src.models.user import User
+
+        # Check for existing user
+        user = await User.get_user(app)
+
+        if not user:
+            # User was not found, we have to create it
+            logger.info("No existing user found. A new user will be created.")
+
+            username, password = user_prompt()
+
+            logger.info(f"Creating new user [magenta bold]{username}[/].")
+            user = await User.create_user(app, username, password)
+        else:
+            logger.info(f"Existing user [magenta bold]{user.username}[/] found.")
 
     @app.listener("after_server_stop")
     async def disconnect_from_db(*args, **kwargs):
+        """Closes DB connection after server stops."""
         await app.db.close()
