@@ -3,7 +3,6 @@ import time
 from celery.utils.log import get_task_logger
 
 from src.config import config
-from src.models import ContractOracle, db
 from src.network.chains import Chains
 from src.network.evm_chain import EvmChain
 from src.network.substrate_chain import SubstrateChain
