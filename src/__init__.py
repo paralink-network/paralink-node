@@ -10,9 +10,9 @@ from sanic_cors import CORS
 from sanic_jsonrpc import SanicJsonrpc
 from sanic_session import InMemorySessionInterface
 
+from src.api import ipfs_bp
 from src.config import config
 from src.logging import DEFAULT_LOGGING_CONFIG
-from src.models import db
 from src.network import chains
 from src.pql.exceptions import PqlDecodingError
 from src.pql.parser import parse_and_execute
@@ -27,9 +27,7 @@ def create_app(args={}) -> Sanic:  # noqa: C901
     CORS(app)
 
     if app.config["ENABLE_DATABASE"]:
-        asyncio.get_event_loop().run_until_complete(
-            db.set_bind(app.config["DATABASE_URL"])
-        )
+        setup_database(app)
 
     # Set UI
     session = InMemorySessionInterface(cookie_name=app.name, prefix=app.name)
@@ -38,6 +36,8 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         from src.process.collector import start_collecting
 
         asyncio.get_event_loop().run_until_complete(start_collecting(chains))
+
+    app.blueprint(ipfs_bp)
 
     @jsonrpc
     async def execute_pql(pql_json: str) -> str:
@@ -108,45 +108,6 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         """
         await session.save(request, response)
 
-    @app.route("/api/ipfs")
-    async def api_ipfs_list(request):
-        """Lists local IPFS hashes.
-
-        Args:
-            request: request
-        """
-        # Connect to the IPFS API server
-        ipfs = ipfshttpclient.connect(app.config["IPFS_API_SERVER_ADDRESS"])
-        hashes = [key for key in ipfs.pin.ls(type="recursive")["Keys"].keys()]
-
-        return response.json({"hashes": hashes})
-
-    @app.route("api/ipfs/<ipfs_hash>")
-    async def api_ipfs_hash(request, ipfs_hash: str):
-        """Get PQL contents in `ipfs_hash`, return error if not valid PQL.
-
-        Args:
-            ipfs_hash: PQL JSON
-        """
-        if ipfs_hash == "new":
-            return response.json(
-                {
-                    "pql": app.config["TEMPLATE_PQL_DEFINITION"],
-                    "hash": "New PQL definition",
-                }
-            )
-
-        ipfs = ipfshttpclient.connect(app.config["IPFS_API_SERVER_ADDRESS"])
-
-        try:
-            js = ipfs.get_json(ipfs_hash, timeout=int(args["--timeout"]))
-
-            return response.json({"pql": js, "hash": ipfs_hash})
-        except DecodingError:
-            return response.json({"error": "Not a JSON file."}, status=400)
-        except Exception:
-            return response.json({"error": "Not a file."}, status=400)
-
     @app.post("/api/test_pql")
     async def test_pql(request):
         """Runs given PQL JSON `request` and returns result.
@@ -165,25 +126,6 @@ def create_app(args={}) -> Sanic:  # noqa: C901
             else:
                 return response.json({"error": str(e)})
 
-    @app.post("/api/save_pql")
-    async def save_pql(request):
-        """Saves given JSON `request` and returns successful JSON.
-
-        Args:
-            request: PQL JSON
-        """
-        pql = request.json
-
-        try:
-            ipfs = ipfshttpclient.connect(app.config["IPFS_API_SERVER_ADDRESS"])
-            ipfs_hash = ipfs.add_json(pql)
-
-            return response.json(
-                {"success": f"Saving was successful, hash: {ipfs_hash}"}
-            )
-        except Exception as e:
-            return response.json({"error": e.message})
-
     @app.get("/add_contract_oracle/<address>")
     async def add_contract_oracle(request, address: str):
         """Adds a contract to be tracked by the node.
@@ -198,3 +140,23 @@ def create_app(args={}) -> Sanic:  # noqa: C901
         return response.json({"result": "ok"})
 
     return app
+
+
+def setup_database(app: Sanic):
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from sqlalchemy.orm import scoped_session, sessionmaker
+
+    engine = create_async_engine(
+        app.config.DATABASE_URL,
+        echo=True,
+    )
+
+    @app.listener("before_server_start")
+    async def connect_to_db(*args, **kwargs):
+        app.db = scoped_session(
+            sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+        )()
+
+    @app.listener("after_server_stop")
+    async def disconnect_from_db(*args, **kwargs):
+        await app.db.close()
