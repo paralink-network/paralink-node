@@ -25,20 +25,31 @@ This is where all node data will be stored.
 
 Before running the node, please setup your `.env`. Copy the `.env.template` file to `.env` and modify the variables. 
 
-To run the node we recommend using `docker-compose`:
+To run the node we recommend using `docker-compose`. For your convenience you can run the commands through `make`:
 
 ```
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+make up
 ```
 
 The node will be available at [localhost:7245](http://localhost:7425). The above command will deploy PostgreSQL, IPFS, RabbitMQ message broker, background Celery worker as well as `nginx` server serving `paralink-ui` React app.
 
-In case you do not want to run the UI (e.g. developing frontend), use
+Whenever you want to shut down the node run:
 
 ```
-docker-compose up --build
+make down
 ```
 
+If you make any changes to the code or configuration, you have to rebuild the containers with:
+
+```
+make build
+```
+
+In case you do not want to run the UI (e.g. developing frontend), use:
+
+```
+make backend
+```
 
 ## Configuration
 
