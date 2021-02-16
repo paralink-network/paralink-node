@@ -48,16 +48,14 @@ def setup_database(app: Sanic):
         app (Sanic): Sanic app
     """
     from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-    from sqlalchemy.orm import scoped_session, sessionmaker
+    from sqlalchemy.orm import sessionmaker
 
     engine = create_async_engine(app.config.DATABASE_URL)
 
     @app.listener("before_server_start")
     async def connect_to_db(*args, **kwargs):
         """Initalizes DB before server starts."""
-        app.db = scoped_session(
-            sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-        )()
+        app.db = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)()
 
     @app.listener("after_server_start")
     async def check_user_signup(*args, **kwargs):
