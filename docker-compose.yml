@@ -10,7 +10,7 @@ services:
     environment:
       DATABASE_HOST: psql
       IPFS_API_SERVER_ADDRESS: /dns/ipfs/tcp/5001/http
-    command: ./paralink-node node start --host 0.0.0.0
+    command: /wait-for-it.sh -t 0 rabbitmq:5672 -- ./paralink-node node start --host 0.0.0.0
     volumes:
       - ${HOME_MOUNT_DIR}/.paralink:/home/worker/.paralink
     ports:
@@ -20,6 +20,7 @@ services:
     depends_on:
       - psql
       - ipfs
+      - rabbitmq
     networks:
       - backend
       - frontend
