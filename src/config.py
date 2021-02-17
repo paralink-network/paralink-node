@@ -56,7 +56,7 @@ class Config:
     DATABASE_HOST = getenv("DATABASE_HOST", "localhost")
     DATABASE_USER = getenv("DATABASE_USER", "paralink")
     DATABASE_PASSWORD = getenv("DATABASE_PASSWORD", "p4r4link")
-    DATABASE_URL = f"postgres://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}"
+    DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}/{DATABASE_NAME}"
 
     # Whether to start a background worker that will collect events from chains
     ENABLE_BACKGROUND_WORKER = getenv("ENABLE_BACKGROUND_WORKER", "True") == "True"

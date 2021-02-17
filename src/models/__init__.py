@@ -1,10 +1,3 @@
-from gino import Gino
+from sqlalchemy.ext.declarative import declarative_base
 
-db = Gino()
-
-
-class ContractOracle(db.Model):  # type: ignore
-    __tablename__ = "contract_oracles"
-
-    id = db.Column(db.String(length=42), primary_key=True)
-    active = db.Column(db.Boolean(), default=True)
+Base = declarative_base()

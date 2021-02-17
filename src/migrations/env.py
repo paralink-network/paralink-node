@@ -8,12 +8,10 @@ from sqlalchemy import engine_from_config, pool
 sys.path.append(".")
 
 from src.config import config as app_config  # noqa: E402
-from src.models import db  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
 config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -21,7 +19,10 @@ config.set_main_option("sqlalchemy.url", app_config.DATABASE_URL)
 fileConfig(config.config_file_name)
 
 # for 'autogenerate' support
-target_metadata = db
+from src.models import Base  # noqa: E402
+from src.models.user import User  # noqa: E402
+
+target_metadata = Base.metadata
 
 
 def run_migrations_offline():
