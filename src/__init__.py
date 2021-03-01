@@ -4,10 +4,12 @@ from sanic import Sanic
 from sanic.log import logger
 from sanic_cors import CORS
 
-from src.api import ipfs_bp, pql_bp
+from src.api import chains_bp, contracts_bp, ipfs_bp, pql_bp
 from src.api.jsonrpc import init_jsonrpc_endpoints
 from src.config import config
 from src.logging import DEFAULT_LOGGING_CONFIG
+from src.models.chain import Chain
+from src.models.contract import Contract
 from src.network import chains
 
 
@@ -27,6 +29,8 @@ def create_app(args: dict = {}) -> Sanic:  # noqa: C901
     init_jsonrpc_endpoints(app)
     app.blueprint(ipfs_bp)
     app.blueprint(pql_bp)
+    app.blueprint(chains_bp)
+    app.blueprint(contracts_bp)
 
     CORS(app)
 
@@ -36,7 +40,9 @@ def create_app(args: dict = {}) -> Sanic:  # noqa: C901
     if app.config["ENABLE_BACKGROUND_WORKER"]:
         from src.process.collector import start_collecting
 
-        asyncio.get_event_loop().run_until_complete(start_collecting(chains))
+        @app.listener("after_server_start")
+        async def start_processor(*args, **kwargs):
+            await start_collecting(chains, app.db)
 
     return app
 
@@ -76,6 +82,11 @@ def setup_database(app: Sanic):
             user = await User.create_user(app, username, password)
         else:
             logger.info(f"Existing user [magenta bold]{user.username}[/] found.")
+
+    @app.listener("after_server_start")
+    async def reconcile_chains(*args, **kwargs):
+        """Reconciles chain data in chain_config.json with database."""
+        await Chain.reconcile_chains(app.db, chains)
 
     @app.listener("after_server_stop")
     async def disconnect_from_db(*args, **kwargs):

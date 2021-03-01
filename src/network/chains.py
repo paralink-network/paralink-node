@@ -1,5 +1,9 @@
 import json
 
+from sqlalchemy.orm.session import Session
+
+from src.models.chain import Chain as ChainDb
+from src.network.chain import Chain
 from src.network.evm_chain import EvmChain
 from src.network.substrate_chain import SubstrateChain
 
@@ -17,10 +21,37 @@ class Chains:
         self.evm = evm
         self.substrate = substrate
 
-    @classmethod
-    def read_from_sql(cls) -> "Chains":
-        # TODO
-        return cls()
+    async def read_from_sql(self, session: Session) -> "Chains":
+        """Fetch chain and contract data from database and update Chains to reflect.
+
+        Args:
+            session (Session): sqlalchemy session
+
+        Returns:
+            Chains: a self reference
+        """
+        chain_data = [chain for chain in await ChainDb.get_chains(session)]
+        for chain in chain_data:
+            if chain.name in {**self.evm, **self.substrate}:
+                target_chain = (
+                    self.evm[chain.name]
+                    if chain.name in self.evm
+                    else self.substrate[chain.name]
+                )
+                self.populate_chain_data(
+                    target_chain,
+                    chain,
+                )
+
+        return self
+
+    @staticmethod
+    def populate_chain_data(chain: Chain, db_chain: ChainDb):
+        chain.active = db_chain.active
+        chain.tracked_contracts = [
+            contract.id for contract in db_chain.contracts if contract.active
+        ]
+        return chain
 
     @classmethod
     def read_from_json(cls, json_path: str) -> "Chains":

@@ -15,8 +15,7 @@ processor.conf.update(
         "src.process.collector.*": {"queue": "collect"},
         "src.process.executor.*": {"queue": "execute"},
     },
-    task_serializer="pickle",
-    accept_content=["json", "pickle"],
+    accept_content=["json"],
     broker_transport_options={
         "max_retries": 3,
         "interval_start": 0,

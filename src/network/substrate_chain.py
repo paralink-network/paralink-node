@@ -192,6 +192,16 @@ class SubstrateChain(Chain):
             f"[[bold]{self.name}[/]] Reading the value from contract after the callback {result}",
         )
 
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "url": self.url,
+            "credentials": self.credentials,
+            "active": self.active,
+            "tracked_contracts": self.tracked_contracts,
+            "metadata_file": self.metadata_file,
+        }
+
     def _validate_chain(self, substrate_interface: SubstrateInterface) -> None:
         """Validates the SubstrateInterface is connected to the expected chain.
 
