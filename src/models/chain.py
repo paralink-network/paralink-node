@@ -7,7 +7,6 @@ from sqlalchemy.orm.session import Session
 
 from src.models import Base
 from src.models.exceptions import ActiveChainFailed
-from src.network.evm_chain import EvmChain
 
 
 class Chain(Base):
@@ -50,16 +49,17 @@ class Chain(Base):
         return result.scalars().all()
 
     @staticmethod
-    async def set_chain_status(session: Session, chain: str, active: bool) -> None:
+    async def set_chain_status(
+        session: Session, chain: str, active: bool, chains
+    ) -> None:
         """Set chain status.
 
         Args:
             session (Session):  sqlalchemy session
             chain (str): Name of chain
             active (str): Status update
+            chains (Chains): Chains object holding evm and substrate chains
         """
-        from src.network import chains
-
         if active and chain not in {**chains.evm, **chains.substrate}:
             raise ActiveChainFailed(
                 f"{chain} could not be activated as it does not exist in chain_config.json or it is disabled."
@@ -87,7 +87,7 @@ class Chain(Base):
         new_chains = [
             {
                 "name": chain.name,
-                "type": "evm" if type(chain) == EvmChain else "substrate",
+                "type": chain.type,
                 "active": True,
             }
             for _, chain in {**chains.evm, **chains.substrate}.items()

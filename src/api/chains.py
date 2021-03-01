@@ -52,7 +52,9 @@ async def set_chain_status(request, chain: str) -> response:
     from src.process import processor
 
     try:
-        await Chain.set_chain_status(request.app.db, chain, request.json.get("active"))
+        await Chain.set_chain_status(
+            request.app.db, chain, request.json.get("active"), chains
+        )
     except ActiveChainFailed as e:
         raise NotFound(e)
 

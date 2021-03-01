@@ -22,7 +22,7 @@ class EvmChain(Chain):
         evm_chain_reference_data=config.EVM_CHAIN_REFERENCE_DATA,
         chain_reference_data=None,
     ):
-        super().__init__(name, url, credentials, active, tracked_contracts)
+        super().__init__(name, url, "evm", credentials, active, tracked_contracts)
 
         self.oracle_metadata = oracle_metadata
         self.chain_reference_data = (

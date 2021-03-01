@@ -34,7 +34,7 @@ class SubstrateChain(Chain):
             metadata_file: metadata file of the oracle contract
             keypair (Keypair): Keypair with which to interact with this account
         """
-        super().__init__(name, url, credentials, active, tracked_contracts)
+        super().__init__(name, url, "substrate", credentials, active, tracked_contracts)
 
         self.metadata_file = metadata_file
 

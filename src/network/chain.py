@@ -5,6 +5,7 @@ class Chain:
         self,
         name: str,
         url: str,
+        type: str,
         credentials: dict = {},
         active: bool = True,
         tracked_contracts: list = [],
@@ -21,6 +22,7 @@ class Chain:
         """
         self.name = name
         self.url = url
+        self.type = type
         self.credentials = credentials
         self.tracked_contracts = tracked_contracts
         self.active = active
