@@ -19,6 +19,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Create home mount directory
+      - name: Create home mount directory
+        run: mkdir ~/.paralink
+
+      # Create appropriate .env file
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          HOME_MOUNT_DIR: ~
+          DATABASE_NAME: paralink_node
+          DATABASE_HOST: psql
+          DATABASE_USER: paralink
+          DATABASE_PASSWORD: p4r4link
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 

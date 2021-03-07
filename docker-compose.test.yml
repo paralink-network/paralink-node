@@ -1,40 +1,4 @@
 version: "3.4"
 services:
   paralink_node:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: paralink_node
-    environment:
-      DATABASE_NAME: paralink_node
-      DATABASE_HOST: psql
-      DATABASE_USER: paralink
-      DATABASE_PASSWORD: p4r4link
-      IPFS_API_SERVER_ADDRESS: /dns/ipfs/tcp/5001/http
     command: /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
-    tty: true
-    stdin_open: true
-    depends_on:
-      - psql
-      - ipfs
-      - rabbitmq
-    networks:
-      - backend
-      - frontend
-    restart: on-failure
-
-  psql:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: paralink_node
-      POSTGRES_USER: paralink
-      POSTGRES_PASSWORD: p4r4link
-    networks:
-      - backend
-    restart: on-failure
-
-  ipfs:
-    image: ipfs/go-ipfs:v0.7.0
-    networks:
-      - backend
-    restart: on-failure
