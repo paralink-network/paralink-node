@@ -24,7 +24,7 @@ jobs:
 
       # Create home mount directory
       - name: Create home mount directory
-        run: mkdir ~/.paralink
+        run: mkdir ~/.paralink && chmod 666
 
       # Create appropriate .env file
       - name: Make envfile
@@ -46,7 +46,7 @@ jobs:
 
       # Attach to container and run tests
       - name: Execute tests
-        run: docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
+        run: sudo docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
 
   pre-commit:
     runs-on: ubuntu-latest
