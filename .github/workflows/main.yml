@@ -26,6 +26,9 @@ jobs:
       - name: Create home mount directory
         run: mkdir ~/.paralink && chmod 666 ~/.paralink
 
+      - name: check mount
+        run: ls ~
+
       # Create appropriate .env file
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1
