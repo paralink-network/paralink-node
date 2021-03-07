@@ -24,7 +24,6 @@ jobs:
 
       # Build integration stack
       - name: Build integration stack
-        uses: actions/setup-python@v2
         run: docker-compose -f docker-compose.yml -f docker-compose.test.yml up --build -d
 
       # Attach to container running tests
