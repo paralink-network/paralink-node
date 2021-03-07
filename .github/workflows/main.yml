@@ -24,7 +24,7 @@ jobs:
 
       # Create home mount directory
       - name: Create home mount directory
-        run: mkdir ~/.paralink && chmod 666
+        run: mkdir ~/.paralink && chmod 666 ~/.paralink
 
       # Create appropriate .env file
       - name: Make envfile
