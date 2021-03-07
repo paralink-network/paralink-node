@@ -1,5 +1,0 @@
-version: "3.4"
-services:
-  paralink_node:
-    command: /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
-    tty: false

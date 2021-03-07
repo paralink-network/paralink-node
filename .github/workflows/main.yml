@@ -38,11 +38,11 @@ jobs:
 
       # Build integration stack
       - name: Build integration stack
-        run: docker-compose -f docker-compose.yml -f docker-compose.test.yml up --build -d
+        run: docker-compose -f docker-compose.yml up --build -d
 
-      # Attach to container running tests
+      # Attach to container and run tests
       - name: Execute tests
-        run: docker attach $(docker-compose ps -q paralink_node)
+        run: docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
 
   pre-commit:
     runs-on: ubuntu-latest
