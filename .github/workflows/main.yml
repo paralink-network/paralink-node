@@ -36,6 +36,10 @@ jobs:
           envkey_DATABASE_USER: paralink
           envkey_DATABASE_PASSWORD: p4r4link
 
+      # Check .env file
+      - name: check .env
+        run: cat .env
+      
       # Build integration stack
       - name: Build integration stack
         run: docker-compose -f docker-compose.yml up --build -d
