@@ -1,15 +1,15 @@
 """add Chain and Contract model
 
-Revision ID: 6821ca065b2e
+Revision ID: a08b639e477b
 Revises: 823286edf8f5
-Create Date: 2021-02-28 18:33:11.445025
+Create Date: 2021-03-05 20:41:05.010732
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "6821ca065b2e"
+revision = "a08b639e477b"
 down_revision = "823286edf8f5"
 branch_labels = None
 depends_on = None
@@ -26,14 +26,16 @@ def upgrade():
     )
     op.create_table(
         "contracts",
-        sa.Column("id", sa.String(), nullable=False),
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
+        sa.Column("address", sa.String(), nullable=False),
         sa.Column("chain", sa.String(), nullable=True),
         sa.ForeignKeyConstraint(
             ["chain"],
             ["chains.name"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("address", "chain", name="uix_1"),
     )
     # ### end Alembic commands ###
 

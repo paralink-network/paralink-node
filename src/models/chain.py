@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import Session
 
 from src.models import Base
-from src.models.exceptions import ActiveChainFailed
+from src.models.exceptions import ActivateChainFailed
 
 
 class Chain(Base):
@@ -61,7 +61,7 @@ class Chain(Base):
             chains (Chains): Chains object holding evm and substrate chains
         """
         if active and chain not in {**chains.evm, **chains.substrate}:
-            raise ActiveChainFailed(
+            raise ActivateChainFailed(
                 f"{chain} could not be activated as it does not exist in chain_config.json or it is disabled."
             )
 
@@ -111,6 +111,7 @@ class Chain(Base):
                 )
             )
         await session.commit()
+        return chains
 
     def serialise(self) -> dict:
         """Serialise chain.

@@ -3,7 +3,7 @@ from sanic import Blueprint, response
 from src.models.contract import Contract
 from src.network import chains
 from src.process import processor
-from src.process.utils import restart_collectors
+from src.process.collector import manage_collector
 
 contracts_bp = Blueprint("contracts_blueprint", url_prefix="/api/contracts")
 
@@ -53,13 +53,16 @@ async def create_contract(request) -> response:
     """
     data = request.json
     await Contract.create_contract(
-        request.app.db, data["id"], data["active"], data["chain"]
+        request.app.db, data["address"], data["active"], data["chain"]
     )
-    await restart_collectors(processor, chains, request.app.db)
+
+    if request.app.config["ENABLE_BACKGROUND_WORKER"]:
+        await chains.from_sql(request.app.db)
+        manage_collector(processor, chains.get_chain(data["chain"]))
     return response.json({"result": "ok"})
 
 
-@contracts_bp.put("/<id>")
+@contracts_bp.put("<id>")
 async def set_contract_status(request, id: str) -> response:
     """Set contract status.
 
@@ -72,11 +75,17 @@ async def set_contract_status(request, id: str) -> response:
     """
     data = request.json
     await Contract.set_contract_status(request.app.db, id, data["active"])
-    await restart_collectors(processor, chains, request.app.db)
+
+    if request.app.config["ENABLE_BACKGROUND_WORKER"]:
+        await chains.from_sql(request.app.db)
+        manage_collector(
+            processor, (await Contract.get_contract(request.app.db, id)).chain
+        )
+
     return response.json({"result": "ok"})
 
 
-@contracts_bp.delete("/<id>")
+@contracts_bp.delete("<id>")
 async def delete_contract(request, id: str):
     """Delete contract.
 
@@ -88,5 +97,11 @@ async def delete_contract(request, id: str):
         response: response
     """
     await Contract.delete_contract(request.app.db, id)
-    await restart_collectors(processor, chains, request.app.db)
+
+    if request.app.config["ENABLE_BACKGROUND_WORKER"]:
+        await chains.from_sql(request.app.db)
+        manage_collector(
+            processor, (await Contract.get_contract(request.app.db, id)).chain
+        )
+
     return response.json({"result": "ok"})

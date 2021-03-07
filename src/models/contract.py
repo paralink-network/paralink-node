@@ -12,9 +12,11 @@ class Contract(Base):
 
     __tablename__ = "contracts"
 
-    id = sa.Column(sa.String, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     active = sa.Column(sa.Boolean, nullable=False)
+    address = sa.Column(sa.String, nullable=False)
     chain = sa.Column(sa.String, sa.ForeignKey("chains.name"))
+    sa.UniqueConstraint(address, chain, name="uix_1")
 
     __mapper_args__ = {"eager_defaults": True}
 
@@ -55,18 +57,19 @@ class Contract(Base):
 
     @staticmethod
     async def create_contract(
-        session: Session, id: str, active: bool, chain: str
+        session: Session, address: str, active: bool, chain: str
     ) -> None:
         """Create contract entry in db.
 
         Args:
             session (Session):  sqlalchemy session
-            id (str): contract identifier
+            address (str): contract address
             active (bool): contract status
             chain (str): chain the contract is associated with
         """
+        # TODO: Add contract validation
         await session.execute(
-            sa.insert(Contract).values(id=id, active=active, chain=chain)
+            sa.insert(Contract).values(address=address, active=active, chain=chain)
         )
         await session.commit()
 
@@ -101,4 +104,9 @@ class Contract(Base):
         Returns:
             dict: serialised contract
         """
-        return {"id": self.id, "chain": self.chain, "active": self.active}
+        return {
+            "id": self.id,
+            "chain": self.chain,
+            "active": self.active,
+            "address": self.address,
+        }

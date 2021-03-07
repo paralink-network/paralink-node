@@ -1,3 +1,6 @@
+from abc import abstractmethod
+
+
 class Chain:
     """Blockchain abstraction for different chains."""
 
@@ -26,3 +29,12 @@ class Chain:
         self.credentials = credentials
         self.tracked_contracts = tracked_contracts
         self.active = active
+
+    @abstractmethod
+    def to_dict(self):
+        """Convert Chain to python dict.
+
+        Returns:
+            dict: dictionary containing chain data
+        """
+        pass

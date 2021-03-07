@@ -1,8 +1,10 @@
 import time
 
+from celery import Celery
 from celery.utils.log import get_task_logger
 from sqlalchemy.orm import Session
 
+from src.network.chain import Chain
 from src.network.chains import Chains
 from src.network.evm_chain import EvmChain
 from src.network.substrate_chain import SubstrateChain
@@ -15,22 +17,46 @@ from src.process.executor import (
 logger = get_task_logger(__name__)
 
 
-async def start_collecting(chains: Chains, session: Session) -> None:
-    """Initiates collecting tasks for addresses specified in the `chains` object."""
-    await chains.read_from_sql(session)
-    for chain_name, chain in chains.evm.items():
-        if chain.active:
+def manage_collector(processor: Celery, chain: Chain) -> None:
+    """Manage collector to reflect updated chain statuses.
+
+    Args:
+        processor (Celery): processor celery application
+        chain (Chain): chain to reconcile
+    """
+    for worker, tasks in processor.control.inspect().active().items():
+        for task in tasks:
+            if (
+                task["name"]
+                in [
+                    listen_for_evm_events.name,
+                    listen_for_substrate_events.name,
+                ]
+                and task["args"][0]["name"] == chain.name
+            ):
+                logger.info(
+                    f"[[bold]{chain.name}[/]][yellow]Terminate chain collector.[/]"
+                )
+                processor.control.terminate(task["id"])
+
+    if chain.active:
+        if chain.type == "evm":
             logger.info(
-                f"[[bold]{chain_name}[/]] Queued [yellow]listening for EVM events[/] task."
+                f"[[bold]{chain.name}[/]] Queued [yellow]listening for EVM events[/] task."
             )
             listen_for_evm_events.delay(chain.to_dict())
-
-    for chain_name, chain in chains.substrate.items():
-        if chain.active:
+        elif chain.type == "substrate":
             logger.info(
-                f"[[bold]{chain_name}[/]] Queued [yellow]listening for Substrate events[/] task."
+                f"[[bold]{chain.name}[/]] Queued [yellow]listening for Substrate events[/] task."
             )
             listen_for_substrate_events.delay(chain.to_dict())
+
+
+async def start_collecting(processor: Celery, chains: Chains, session: Session) -> None:
+    """Initiates collecting tasks for addresses specified in the `chains` object."""
+    await chains.from_sql(session)
+    for chain_name, chain in chains.get_chains():
+        manage_collector(processor, chain)
 
 
 @processor.task
@@ -43,6 +69,9 @@ def listen_for_evm_events(chain_payload: dict, poll_interval=2) -> None:
         chain_payload: chain payload containing chain information.
         poll_interval: time between the checks.
     """
+    while True:
+        print(chain_payload["name"])
+        time.sleep(20)
     evm_chain = EvmChain(**chain_payload)
     w3 = evm_chain.get_connection()
 

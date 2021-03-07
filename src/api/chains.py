@@ -2,8 +2,9 @@ from sanic import Blueprint, response
 from sanic.exceptions import NotFound
 
 from src.models.chain import Chain
-from src.models.exceptions import ActiveChainFailed
-from src.process.utils import restart_collectors
+from src.models.exceptions import ActivateChainFailed
+from src.process import processor
+from src.process.collector import manage_collector
 
 chains_bp = Blueprint("chains_blueprint", url_prefix="/api/chains")
 
@@ -49,14 +50,16 @@ async def set_chain_status(request, chain: str) -> response:
         response: response
     """
     from src.network import chains
-    from src.process import processor
 
     try:
         await Chain.set_chain_status(
             request.app.db, chain, request.json.get("active"), chains
         )
-    except ActiveChainFailed as e:
+    except ActivateChainFailed as e:
         raise NotFound(e)
 
-    await restart_collectors(processor, chains, request.app.db)
+    if request.app.config["ENABLE_BACKGROUND_WORKER"]:
+        await chains.from_sql(request.app.db)
+        manage_collector(processor, chains.get_chain(chain))
+
     return response.json({"result": "ok"})
