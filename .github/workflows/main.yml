@@ -49,7 +49,7 @@ jobs:
 
       # Attach to container and run tests
       - name: Execute tests
-        run: sudo docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
+        run: docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
 
   pre-commit:
     runs-on: ubuntu-latest
