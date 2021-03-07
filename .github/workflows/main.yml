@@ -21,7 +21,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+
       # Create home mount directory
       - name: Create home mount directory
         run: mkdir ~/.paralink
@@ -42,7 +42,7 @@ jobs:
 
       # Attach to container running tests
       - name: Execute tests
-        run: docker attach $$(docker-compose ps -q paralink_node)
+        run: docker attach $(docker-compose ps -q paralink_node)
 
   pre-commit:
     runs-on: ubuntu-latest
