@@ -27,7 +27,7 @@ jobs:
         run: mkdir ~/.paralink && chmod 666 ~/.paralink
 
       - name: check mount
-        run: ls ~
+        run: ls -al ~
 
       # Create appropriate .env file
       - name: Make envfile
