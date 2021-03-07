@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
       # Create home mount directory
       - name: Create home mount directory
         run: mkdir ~/.paralink
@@ -32,9 +35,6 @@ jobs:
           DATABASE_HOST: psql
           DATABASE_USER: paralink
           DATABASE_PASSWORD: p4r4link
-
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
 
       # Build integration stack
       - name: Build integration stack
