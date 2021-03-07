@@ -24,16 +24,16 @@ jobs:
 
       # Create home mount directory
       - name: Create home mount directory
-        run: mkdir -p /home/paralink_mount/.paralink
+        run: mkdir -p ~/paralink_mount/.paralink
 
       - name: check mount
-        run: ls -al /home/paralink_mount
+        run: ls -al ~/paralink_mount
 
       # Create appropriate .env file
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1
         with:
-          envkey_HOME_MOUNT_DIR: /home/paralink_mount
+          envkey_HOME_MOUNT_DIR: ~/paralink_mount
           envkey_DATABASE_NAME: paralink_node
           envkey_DATABASE_HOST: psql
           envkey_DATABASE_USER: paralink
