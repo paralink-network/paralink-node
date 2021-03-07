@@ -18,7 +18,3 @@ test:
 	ret=$$?; \
 	docker-compose -f docker-compose.yml -f docker-compose.test.yml down; \
 	exit $$ret
-
-
-ipython:
-	docker exec -it $$(docker-compose ps -q dod-stream) python -m IPython
