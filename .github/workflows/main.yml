@@ -30,11 +30,11 @@ jobs:
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1
         with:
-          HOME_MOUNT_DIR: ~
-          DATABASE_NAME: paralink_node
-          DATABASE_HOST: psql
-          DATABASE_USER: paralink
-          DATABASE_PASSWORD: p4r4link
+          envkey_HOME_MOUNT_DIR: ~
+          envkey_DATABASE_NAME: paralink_node
+          envkey_DATABASE_HOST: psql
+          envkey_DATABASE_USER: paralink
+          envkey_DATABASE_PASSWORD: p4r4link
 
       # Build integration stack
       - name: Build integration stack
