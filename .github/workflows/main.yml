@@ -26,9 +26,6 @@ jobs:
       - name: Create home mount directory
         run: mkdir ~/.paralink
 
-      - name: check mount
-        run: ls -al ~/.paralink
-
       # Create appropriate .env file
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1
@@ -39,10 +36,6 @@ jobs:
           envkey_DATABASE_USER: paralink
           envkey_DATABASE_PASSWORD: p4r4link
 
-      # Check .env file
-      - name: check .env
-        run: cat .env
-
       # Build integration stack
       - name: Build integration stack
         run: docker-compose -f docker-compose.yml up --build -d
@@ -51,33 +44,6 @@ jobs:
       - name: Execute tests
         run: docker exec $(docker-compose ps -q paralink_node) /wait-for-it.sh -t 0 rabbitmq:5672 -- pipenv run python3 -m pytest tests/ -svvv
 
-  pre-commit:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Setup Python (faster than using Python container)
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-
-      - name: Install pipenv
-        run: |
-          python -m pip install --upgrade pipenv wheel
-      - id: cache-pipenv
-        uses: actions/cache@v1
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
-
-      - name: Install dependencies
-        if: steps.cache-pipenv.outputs.cache-hit != 'true'
-        run: |
-          pipenv install
-
-      - name: Run pre-commit
-        run: |
-          pipenv run pre-commit run --all-files
+      # Run pre-commit
+      - name: pre-commit
+        run: docker exec $(docker-compose ps -q paralink_node) pipenv run pre-commit run --all-files
