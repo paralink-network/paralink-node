@@ -1,8 +1,11 @@
+import pytest
+
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
 from src.models.chain import Chain
 from src.models.contract import Contract
+from src.models.exceptions import ChainNotFound, InvalidAddress
 
 
 async def test_get_contract(db: Session):
@@ -37,26 +40,72 @@ async def test_get_contracts(db: Session):
     assert all_chains == [contract_1, contract_2, contract_3]
 
 
-async def test_create_contract(db: Session):
-    # Create chain
-    chain = Chain(active=True, name="eth.mainnet", type="evm")
-    db.add(chain)
+async def test_create_contract_raises_exceptions_for_invalid_address(db: Session):
+    # Test exception raised when chain specified does not exist
+    with pytest.raises(ChainNotFound):
+        await Contract.create_contract(
+            db, address="address", active=True, chain="eth.mainnet"
+        )
+
+    # Create chains
+    eth_mainnet = Chain(active=True, name="eth.mainnet", type="evm")
+    polkadot = Chain(active=True, name="polkadot", type="substrate")
+    db.add_all([eth_mainnet, polkadot])
     await db.commit()
 
-    # Create contract
+    # Check create contract fails on invalid evm address
+    with pytest.raises(InvalidAddress):
+        await Contract.create_contract(
+            db, address="address", active=True, chain="eth.mainnet"
+        )
+
+    # Check create contract fails on invalid substrate address
+    with pytest.raises(InvalidAddress):
+        await Contract.create_contract(
+            db, address="address", active=True, chain="polkadot"
+        )
+
+    # Check create contract fails on address with wrong ss58 prefix
+    kusama_address = "HvnoT6AaxPB9Fry3JH17C8PkoMBZhE73APZx5XJndn24baK"
+    with pytest.raises(InvalidAddress):
+        await Contract.create_contract(
+            db, address=kusama_address, active=True, chain="polkadot"
+        )
+
+
+async def test_create_contract(db: Session):
+    # Create chains
+    eth_mainnet = Chain(active=True, name="eth.mainnet", type="evm")
+    polkadot = Chain(active=True, name="polkadot", type="substrate")
+    db.add_all([eth_mainnet, polkadot])
+    await db.commit()
+
+    # Create eth contract
+    eth_mainnet_contract_address = "0x30293259e3C0034b38E46d464Cf5B0eE652D1d07"
+    chain = "eth.mainnet"
+    active = True
     await Contract.create_contract(
-        db, address="addr1", active=True, chain="eth.mainnet"
+        db, address=eth_mainnet_contract_address, active=active, chain=chain
     )
 
-    # Fetch contract database entry and assert data (ignore autoincrement id)
+    # Fetch eth contract database entry and assert data (ignore autoincrement id)
     result = await db.execute(
         select(Contract).where(
-            Contract.address == "addr1" and Contract.chain == "eth.mainnet"
+            Contract.address == eth_mainnet_contract_address and Contract.chain == chain
         )
     )
     assert {
         x: y for x, y in result.scalars().first().serialise().items() if x != "id"
-    } == {"address": "addr1", "active": True, "chain": "eth.mainnet"}
+    } == {"address": eth_mainnet_contract_address, "active": active, "chain": chain}
+
+    # Check that substrate contract does not error when creating contract with
+    # valid polkadot address
+    await Contract.create_contract(
+        db,
+        address="1exaAg2VJRQbyUBAeXcktChCAqjVP9TUxF3zo23R2T6EGdE",
+        active=True,
+        chain="polkadot",
+    )
 
 
 async def test_set_contract_status(db: Session):

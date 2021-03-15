@@ -1,6 +1,8 @@
 from sanic import Blueprint, response
+from sanic.exceptions import InvalidUsage
 
 from src.models.contract import Contract
+from src.models.exceptions import ChainNotFound, InvalidAddress
 from src.network import chains
 from src.process import processor
 from src.process.collector import manage_collector
@@ -52,9 +54,12 @@ async def create_contract(request) -> response:
         response: response
     """
     data = request.json
-    await Contract.create_contract(
-        request.app.db, data["address"], data["active"], data["chain"]
-    )
+    try:
+        await Contract.create_contract(
+            request.app.db, data["address"], data["active"], data["chain"]
+        )
+    except (InvalidAddress, ChainNotFound) as e:
+        raise InvalidUsage(e)
 
     if request.app.config["ENABLE_BACKGROUND_WORKER"]:
         await chains.from_sql(request.app.db)
@@ -62,7 +67,7 @@ async def create_contract(request) -> response:
     return response.json({"result": "ok"})
 
 
-@contracts_bp.put("<id>")
+@contracts_bp.put("/<id>")
 async def set_contract_status(request, id: str) -> response:
     """Set contract status.
 
@@ -74,19 +79,19 @@ async def set_contract_status(request, id: str) -> response:
         response: response
     """
     data = request.json
-    await Contract.set_contract_status(request.app.db, id, data["active"])
+    await Contract.set_contract_status(request.app.db, int(id), data["active"])
 
     if request.app.config["ENABLE_BACKGROUND_WORKER"]:
         await chains.from_sql(request.app.db)
         manage_collector(
-            processor, (await Contract.get_contract(request.app.db, id)).chain
+            processor, (await Contract.get_contract(request.app.db, int(id))).chain
         )
 
     return response.json({"result": "ok"})
 
 
-@contracts_bp.delete("<id>")
-async def delete_contract(request, id: str):
+@contracts_bp.delete("/<id>")
+async def delete_contract(request, id: int):
     """Delete contract.
 
     Args:

@@ -1,10 +1,11 @@
+from os import getenv
+
 import pytest
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from src import create_app
-from src.config import Config
 from src.models import Base
 from src.network.chains import Chains
 
@@ -26,7 +27,13 @@ def client(loop, app, sanic_client):
 
 @pytest.fixture(scope="session")
 def engine():
-    return create_async_engine(Config.DATABASE_URL)
+    # Test Database
+    TEST_DATABASE_NAME = getenv("TEST_DATABASE_NAME", "test_database")
+    TEST_DATABASE_HOST = getenv("TEST_DATABASE_HOST", "test_psql")
+    TEST_DATABASE_USER = getenv("TEST_DATABASE_USER", "test_user")
+    TEST_DATABASE_PASSWORD = getenv("TEST_DATABASE_PASSWORD", "test_password")
+    TEST_DATABASE_URL = f"postgresql://{TEST_DATABASE_USER}:{TEST_DATABASE_PASSWORD}@{TEST_DATABASE_HOST}/{TEST_DATABASE_NAME}"
+    return create_async_engine(TEST_DATABASE_URL)
 
 
 @pytest.fixture()

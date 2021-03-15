@@ -12,6 +12,7 @@ from src.models.chain import Chain
 from src.models.contract import Contract
 from src.network import chains
 from src.process import processor
+from src.process.collector import start_collecting
 
 
 def create_app(args: dict = {}) -> Sanic:  # noqa: C901
@@ -87,3 +88,10 @@ def configure_hooks(app: Sanic):
         async def disconnect_from_db(*args, **kwargs):
             """Closes DB connection after server stops."""
             await app.db.close()
+
+    if app.config["ENABLE_BACKGROUND_WORKER"]:
+
+        @app.listener("after_server_start")
+        async def start_collectors(*args, **kwargs):
+            """Start collectors to listen for oracle events."""
+            await start_collecting(processor, chains, app.db)

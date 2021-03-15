@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from scalecodec.base import ScaleBytes
 from substrateinterface import Keypair, SubstrateInterface
@@ -8,6 +9,7 @@ from substrateinterface.contracts import (
     ContractMetadata,
 )
 
+from src.config import config
 from src.network.chain import Chain
 from src.network.exceptions import ChainValidationFailed
 
@@ -214,3 +216,13 @@ class SubstrateChain(Chain):
                 f"- Expected chain name: {self.name} "
                 f"- Actual: {substrate_interface.chain.lower()}"
             )
+
+    @staticmethod
+    def get_ss58_prefix(
+        chain: str, reference_data: dict = config.SUBSTRATE_CHAIN_REFERENCE_DATA
+    ) -> typing.Optional[int]:
+        chain_registry = reference_data["registry"]
+        for chain_reference in chain_registry:
+            if chain_reference["network"] == chain:
+                return chain_reference["prefix"]
+        return None

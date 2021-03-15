@@ -1,10 +1,15 @@
 import typing
 
 import sqlalchemy as sa
+import web3
 from sqlalchemy.future import select
 from sqlalchemy.orm.session import Session
+from substrateinterface.utils.ss58 import is_valid_ss58_address
 
 from src.models import Base
+from src.models.chain import Chain
+from src.models.exceptions import ChainNotFound, InvalidAddress
+from src.network.substrate_chain import SubstrateChain
 
 
 class Contract(Base):
@@ -21,7 +26,7 @@ class Contract(Base):
     __mapper_args__ = {"eager_defaults": True}
 
     @staticmethod
-    async def get_contract(session: Session, id: str) -> "Contract":
+    async def get_contract(session: Session, id: int) -> "Contract":
         """Get specified contract.
 
         Args:
@@ -62,19 +67,36 @@ class Contract(Base):
         """Create contract entry in db.
 
         Args:
-            session (Session):  sqlalchemy session
+            session (Session): sqlalchemy session
             address (str): contract address
             active (bool): contract status
             chain (str): chain the contract is associated with
+
+        Raises:
+            ChainNotFound: raised if the chain specified does not exist in the db
+            InvalidAddress: raised if the address is not valid for the chain specified
         """
-        # TODO: Add contract validation
+        chain_data = await Chain.get_chain(session, chain)
+        if not chain_data:
+            raise ChainNotFound(f"Chain not found: {chain}")
+
+        if (chain_data.type == "evm" and not web3.Web3.isAddress(address)) or (
+            chain_data.type == "substrate"
+            and not is_valid_ss58_address(
+                address, SubstrateChain.get_ss58_prefix(chain)
+            )
+        ):
+            raise InvalidAddress(
+                f"Invalid address for chain: {chain} - address: {address}"
+            )
+
         await session.execute(
             sa.insert(Contract).values(address=address, active=active, chain=chain)
         )
         await session.commit()
 
     @staticmethod
-    async def set_contract_status(session: Session, id: str, active: bool) -> None:
+    async def set_contract_status(session: Session, id: int, active: bool) -> None:
         """Set contract status.
 
         Args:
@@ -88,7 +110,7 @@ class Contract(Base):
         await session.commit()
 
     @staticmethod
-    async def delete_contract(session: Session, id: str) -> None:
+    async def delete_contract(session: Session, id: int) -> None:
         """Delete contract.
 
         Args:

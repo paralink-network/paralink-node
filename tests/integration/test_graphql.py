@@ -104,6 +104,6 @@ async def test_graphql(client):
             "id": 1,
         }
         res = await client.post("/rpc", json=request)
-        res = await res.json()
+        res = res.json()
 
         assert res == {"jsonrpc": "2.0", "result": "46", "id": 1}

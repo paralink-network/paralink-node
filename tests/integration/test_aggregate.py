@@ -138,6 +138,6 @@ async def test_mean(client, pql_json, mock_responses, method, expected_value):
         "id": 1,
     }
     res = await client.post("/rpc", json=request)
-    res = await res.json()
+    res = res.json()
 
     assert res["result"] == expected_value

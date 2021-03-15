@@ -1,0 +1,11 @@
+version: "3.4"
+services:
+  test_psql:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: test_database
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    networks:
+      - backend
+    restart: on-failure

@@ -55,7 +55,7 @@ def manage_collector(processor: Celery, chain: Chain) -> None:
 async def start_collecting(processor: Celery, chains: Chains, session: Session) -> None:
     """Initiates collecting tasks for addresses specified in the `chains` object."""
     await chains.from_sql(session)
-    for chain_name, chain in chains.get_chains():
+    for chain in chains.get_chains().values():
         manage_collector(processor, chain)
 
 
@@ -69,9 +69,6 @@ def listen_for_evm_events(chain_payload: dict, poll_interval=2) -> None:
         chain_payload: chain payload containing chain information.
         poll_interval: time between the checks.
     """
-    while True:
-        print(chain_payload["name"])
-        time.sleep(20)
     evm_chain = EvmChain(**chain_payload)
     w3 = evm_chain.get_connection()
 

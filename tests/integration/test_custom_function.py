@@ -81,7 +81,7 @@ async def test_custom_function_not_found(client, bad_custom_step_pql, bad_custom
             "id": 1,
         }
         res = await client.post("/rpc", json=request)
-        res = await res.json()
+        res = res.json()
 
         assert res == {
             "jsonrpc": "2.0",
@@ -107,6 +107,6 @@ async def test_custom_function(client, mocker, pql):
             "id": 1,
         }
         res = await client.post("/rpc", json=request)
-        res = await res.json()
+        res = res.json()
 
         assert res == {"jsonrpc": "2.0", "result": "35000", "id": 1}
