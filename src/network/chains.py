@@ -79,6 +79,14 @@ class Chains:
         return cls(evm, substrate)
 
     def get_chain(self, chain: str) -> Optional[Chain]:
+        """Get chain.
+
+        Args:
+            chain: chain name.
+
+        Returns:
+            Chain: Chain object associated with chain name
+        """
         if chain in self.evm:
             return self.evm[chain]
         elif chain in self.substrate:
@@ -87,4 +95,9 @@ class Chains:
             return None
 
     def get_chains(self) -> dict:
+        """Get all chains in a single dict.
+
+        Returns:
+            dict: dict containing all chains
+        """
         return {**self.evm, **self.substrate}

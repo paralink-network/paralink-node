@@ -89,6 +89,11 @@ class EvmChain(Chain):
         logger.info(f"[[bold]{self.name}[/]] Received TX receipt: {tx_receipt}")
 
     def to_dict(self) -> dict:
+        """Serialise EvmChain to dict.
+
+        Returns:
+            dict: a dictionary containing EvmChain instance data.
+        """
         return {
             "name": self.name,
             "url": self.url,

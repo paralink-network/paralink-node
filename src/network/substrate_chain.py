@@ -195,6 +195,11 @@ class SubstrateChain(Chain):
         )
 
     def to_dict(self) -> dict:
+        """Serialise SubstrateChain to dict.
+
+        Returns:
+            dict: a dictionary containing SubstrateChain instance data.
+        """
         return {
             "name": self.name,
             "url": self.url,
@@ -221,6 +226,15 @@ class SubstrateChain(Chain):
     def get_ss58_prefix(
         chain: str, reference_data: dict = config.SUBSTRATE_CHAIN_REFERENCE_DATA
     ) -> typing.Optional[int]:
+        """Get ss58 prefix for specified chain.
+
+        Args:
+            chain (str): the name of the chain
+            reference_data (dict): reference data containing chain prefixes
+
+        Returns:
+            Optional[int]: the chain prefix if found else None
+        """
         chain_registry = reference_data["registry"]
         for chain_reference in chain_registry:
             if chain_reference["network"] == chain:
