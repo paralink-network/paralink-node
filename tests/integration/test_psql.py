@@ -43,6 +43,6 @@ async def test_psql_connection(client, mocker):
         "id": 1,
     }
     res = await client.post("/rpc", json=request)
-    res = await res.json()
+    res = res.json()
 
     assert res == {"jsonrpc": "2.0", "result": "20000", "id": 1}

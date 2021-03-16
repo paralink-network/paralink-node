@@ -22,13 +22,13 @@ class User(Base):
     @validates("username")
     def validate_username(self, key: str, username: str) -> str:
         """Validate username."""
-        assert len(username) > 1 and len(username) < 255
+        assert 1 < len(username) < 255
         return username
 
-    @validates("password")
-    def validate_password(self, key: str, password: str) -> str:
+    @staticmethod
+    def validate_password(password: str) -> str:
         """Validate password."""
-        assert len(password) > 1 and len(password) < 255
+        assert 1 < len(password) < 255
         return password
 
     def set_password(self, password: str) -> None:
@@ -80,7 +80,7 @@ class User(Base):
             "User": User model.
         """
         user = User(username=username)
-        user.set_password(password)
+        user.set_password(User.validate_password(password))
 
         app.db.add(user)
         await app.db.commit()

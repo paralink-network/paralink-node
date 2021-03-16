@@ -20,12 +20,15 @@ class EvmChain(Chain):
         tracked_contracts=[],
         oracle_metadata=config.ORACLE_CONTRACT_ABI,
         evm_chain_reference_data=config.EVM_CHAIN_REFERENCE_DATA,
+        chain_reference_data=None,
     ):
-        super().__init__(name, url, credentials, active, tracked_contracts)
+        super().__init__(name, url, "evm", credentials, active, tracked_contracts)
 
         self.oracle_metadata = oracle_metadata
-        self.chain_reference_data = self._get_evm_chain_reference_data(
-            evm_chain_reference_data
+        self.chain_reference_data = (
+            chain_reference_data
+            if chain_reference_data
+            else self._get_evm_chain_reference_data(evm_chain_reference_data)
         )
 
     def get_connection(self, validate_chain: bool = True) -> Web3:
@@ -84,6 +87,22 @@ class EvmChain(Chain):
         tx_receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
         logger.info(f"[[bold]{self.name}[/]] Received TX receipt: {tx_receipt}")
+
+    def to_dict(self) -> dict:
+        """Serialise EvmChain to dict.
+
+        Returns:
+            dict: a dictionary containing EvmChain instance data.
+        """
+        return {
+            "name": self.name,
+            "url": self.url,
+            "credentials": self.credentials,
+            "active": self.active,
+            "tracked_contracts": self.tracked_contracts,
+            "oracle_metadata": self.oracle_metadata,
+            "chain_reference_data": self.chain_reference_data,
+        }
 
     def _validate_chain(self, w3: Web3) -> None:
         """Validates the web3 instance has the expected chainId and networkId.

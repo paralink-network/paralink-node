@@ -1,5 +1,10 @@
 import json
+from typing import Optional
 
+from sqlalchemy.orm.session import Session
+
+from src.models.chain import Chain as ChainDb
+from src.network.chain import Chain
 from src.network.evm_chain import EvmChain
 from src.network.substrate_chain import SubstrateChain
 
@@ -17,46 +22,82 @@ class Chains:
         self.evm = evm
         self.substrate = substrate
 
-    @classmethod
-    def read_from_sql(cls) -> "Chains":
-        # TODO
-        return cls()
+    async def from_sql(self, session: Session) -> "Chains":
+        """Fetch chain and contract data from database and update Chains to reflect.
+
+        Args:
+            session (Session): sqlalchemy session
+
+        Returns:
+            Chains: a self reference
+        """
+        chain_data = await ChainDb.get_chains(session)
+        for chain in chain_data:
+            target_chain = self.get_chain(chain.name)
+            if target_chain is not None:
+                target_chain.active = chain.active
+                target_chain.tracked_contracts = [
+                    contract.address for contract in chain.contracts if contract.active
+                ]
+
+        return self
 
     @classmethod
-    def read_from_json(cls, json_path: str) -> "Chains":
-        """read_from_json parses the JSON chain_config file and returns it as a `Chains`
+    def from_list(cls, chain_config: list) -> "Chains":
+        """from_list parses the chain_config list and returns it as a `Chains`
         object.
 
         Args:
-            json_path (str): path to the JSON
+            chain_config (list): list of Chain configurations.
 
         Returns:
             "Chains": Chains object with parsed data.
         """
-        with open(json_path, "r") as chain_config_file:
-            chain_config = json.load(chain_config_file)
+        evm = {}
+        substrate = {}
+        for chain in chain_config:
+            if "enabled" in chain and chain["enabled"]:
+                if chain["type"] == "evm":
+                    evm[chain["name"]] = EvmChain(
+                        name=chain["name"],
+                        url=chain["url"],
+                        credentials=chain.get("credentials", {}),
+                        tracked_contracts=chain.get("tracked_contracts", []),
+                    )
+                elif chain["type"] == "substrate":
+                    substrate[chain["name"]] = SubstrateChain(
+                        name=chain["name"],
+                        url=chain["url"],
+                        credentials=chain.get("credentials", {}),
+                        tracked_contracts=chain.get("tracked_contracts", []),
+                        metadata_file=chain.get(
+                            "metadata_file",
+                            "src/data/polkadot/oracle_metadata.json",
+                        ),
+                    )
 
-            evm = {}
-            substrate = {}
-            for chain in chain_config:
-                if "enabled" in chain and chain["enabled"]:
-                    if chain["type"] == "evm":
-                        evm[chain["name"]] = EvmChain(
-                            name=chain["name"],
-                            url=chain["url"],
-                            credentials=chain.get("credentials", {}),
-                            tracked_contracts=chain.get("tracked_contracts", []),
-                        )
-                    elif chain["type"] == "substrate":
-                        substrate[chain["name"]] = SubstrateChain(
-                            name=chain["name"],
-                            url=chain["url"],
-                            credentials=chain.get("credentials", {}),
-                            tracked_contracts=chain.get("tracked_contracts", []),
-                            metadata_file=chain.get(
-                                "metadata_file",
-                                "src/data/polkadot/oracle_metadata.json",
-                            ),
-                        )
+        return cls(evm, substrate)
 
-            return cls(evm, substrate)
+    def get_chain(self, chain: str) -> Optional[Chain]:
+        """Get chain.
+
+        Args:
+            chain: chain name.
+
+        Returns:
+            Chain: Chain object associated with chain name
+        """
+        if chain in self.evm:
+            return self.evm[chain]
+        elif chain in self.substrate:
+            return self.substrate[chain]
+        else:
+            return None
+
+    def get_chains(self) -> dict:
+        """Get all chains in a single dict.
+
+        Returns:
+            dict: dict containing all chains
+        """
+        return {**self.evm, **self.substrate}

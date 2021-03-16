@@ -55,7 +55,7 @@ async def test_pql_schema(client, pql, bad_step, second_bad_step):
             "id": 1,
         }
         res = await client.post("/rpc", json=request)
-        res = await res.json()
+        res = res.json()
 
         assert res == {
             "jsonrpc": "2.0",

@@ -4,10 +4,8 @@ RUN wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for
 
 RUN pip install -U pipenv
 
-RUN adduser --disabled-password worker
-USER worker
-RUN mkdir /home/worker/paralink-node
-RUN mkdir /home/worker/paralink-node/data
+RUN mkdir -p /home/worker/paralink-node
+RUN mkdir -p /home/worker/paralink-node/data
 WORKDIR /home/worker/paralink-node
 
 COPY . /node

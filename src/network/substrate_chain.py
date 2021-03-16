@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from scalecodec.base import ScaleBytes
 from substrateinterface import Keypair, SubstrateInterface
@@ -8,6 +9,7 @@ from substrateinterface.contracts import (
     ContractMetadata,
 )
 
+from src.config import config
 from src.network.chain import Chain
 from src.network.exceptions import ChainValidationFailed
 
@@ -34,7 +36,7 @@ class SubstrateChain(Chain):
             metadata_file: metadata file of the oracle contract
             keypair (Keypair): Keypair with which to interact with this account
         """
-        super().__init__(name, url, credentials, active, tracked_contracts)
+        super().__init__(name, url, "substrate", credentials, active, tracked_contracts)
 
         self.metadata_file = metadata_file
 
@@ -192,6 +194,21 @@ class SubstrateChain(Chain):
             f"[[bold]{self.name}[/]] Reading the value from contract after the callback {result}",
         )
 
+    def to_dict(self) -> dict:
+        """Serialise SubstrateChain to dict.
+
+        Returns:
+            dict: a dictionary containing SubstrateChain instance data.
+        """
+        return {
+            "name": self.name,
+            "url": self.url,
+            "credentials": self.credentials,
+            "active": self.active,
+            "tracked_contracts": self.tracked_contracts,
+            "metadata_file": self.metadata_file,
+        }
+
     def _validate_chain(self, substrate_interface: SubstrateInterface) -> None:
         """Validates the SubstrateInterface is connected to the expected chain.
 
@@ -204,3 +221,22 @@ class SubstrateChain(Chain):
                 f"- Expected chain name: {self.name} "
                 f"- Actual: {substrate_interface.chain.lower()}"
             )
+
+    @staticmethod
+    def get_ss58_prefix(
+        chain: str, reference_data: dict = config.SUBSTRATE_CHAIN_REFERENCE_DATA
+    ) -> typing.Optional[int]:
+        """Get ss58 prefix for specified chain.
+
+        Args:
+            chain (str): the name of the chain
+            reference_data (dict): reference data containing chain prefixes
+
+        Returns:
+            Optional[int]: the chain prefix if found else None
+        """
+        chain_registry = reference_data["registry"]
+        for chain_reference in chain_registry:
+            if chain_reference["network"] == chain:
+                return chain_reference["prefix"]
+        return None
