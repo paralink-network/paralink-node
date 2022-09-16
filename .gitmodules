@@ -1,3 +1,3 @@
 [submodule "paralink-ui"]
 	path = paralink-ui
-	url = git@github.com:paralink-network/paralink-ui.git
+	url = https://github.com/paralink-network/paralink-ui.git

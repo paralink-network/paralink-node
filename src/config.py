@@ -46,7 +46,9 @@ class Config:
     # Ethereum
     ETHERSCAN_KEY = getenv("ETHERSCAN_KEY")
     GETH_HTTP_RPC = getenv("GETH_HTTP_RPC", "http://localhost:8745")
-    IPFS_API_SERVER_ADDRESS = getenv("IPFS_API_SERVER_ADDRESS")
+    IPFS_API_SERVER_ADDRESS = getenv(
+        "IPFS_API_SERVER_ADDRESS", "/dns/ipfs/tcp/5001/http"
+    )
     WEB3_PROVIDER_URI = getenv("WEB3_PROVIDER_URI")
 
     CELERY_BROKER_URL = getenv("CELERY_BROKER_URL")
